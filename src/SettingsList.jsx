@@ -108,44 +108,53 @@ export class SettingsList extends React.Component {
   }
 
   message = () => {
-    debugger;
     if (this.props.message) {
       return <Alert message={this.props.message} type="success" />;
     }
   }
 
   render() {
-    let { filteredStatus } = this.state;
-    filteredStatus = filteredStatus || {};
     const columns = [
       {
-        title: 'Owner',
-        dataIndex: 'ownerName',
-        key: 'ownerName',
-        ...this.getColumnSearchProps('ownerName', 'Owner'),
+        title: "Owner",
+        dataIndex: "ownerName",
+        key: "ownerName",
+        ...this.getColumnSearchProps("ownerName", "Owner")
       },
       {
-        title: 'Percentage',
-        dataIndex: 'advancedroundrobin.Percent',
-        key: 'advancedroundrobin.Percent',
+        title: "Percentage",
+        dataIndex: "advancedroundrobin.Percent",
+        key: "advancedroundrobin.Percent"
       },
       {
-        title: 'Module',
-        dataIndex: 'advancedroundrobin.Module',
-        key: 'advancedroundrobin.Module',
-        ...this.getColumnSearchProps('advancedroundrobin.Module', 'Module'),
+        title: "Module",
+        dataIndex: "advancedroundrobin.Module",
+        key: "advancedroundrobin.Module",
+        ...this.getColumnSearchProps("advancedroundrobin.Module", "Module")
       },
       {
-        title: 'Field Criteria',
-        dataIndex: 'advancedroundrobin.Field_Criteria',
-        key: 'advancedroundrobin.Field_Criteria',
-        ...this.getColumnSearchProps('advancedroundrobin.Field_Criteria', 'Field Criteria'),
+        title: "Disabled Until",
+        dataIndex: "advancedroundrobin.Disabled_Until",
+        key: "advancedroundrobin.Disabled_Until"
       },
       {
-        title: 'Edit',
+        title: "Field Criteria",
+        dataIndex: "advancedroundrobin.Field_Criteria",
+        key: "advancedroundrobin.Field_Criteria",
+        ...this.getColumnSearchProps(
+          "advancedroundrobin.Field_Criteria",
+          "Field Criteria"
+        )
+      },
+      {
+        title: "Edit",
         render: currentRow => {
           return (
-            <Button onClick={() => this.props.handleEditRecord(currentRow.id)}>Edit</Button>
+            <Button
+              onClick={() => this.props.handleEditRecord(currentRow.id)}
+            >
+              Edit
+            </Button>
           );
         }
       }

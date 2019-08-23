@@ -1,13 +1,8 @@
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-} from 'antd';
-import React from 'react';
+import { Button, DatePicker, Form, Input, InputNumber, Select } from "antd";
+import moment from "moment";
+import React from "react";
 
-import { FieldCriteriaTable } from './FieldCriteriaTable';
+import { FieldCriteriaTable } from "./FieldCriteriaTable";
 
 const validateAndSubmit = (e, validateFields, submitHandler) => {
   e.preventDefault();
@@ -23,8 +18,12 @@ class UnwrappedEditSettingForm extends React.Component {
     const { data, activeUsers, form } = this.props;
     const { getFieldDecorator } = form;
 
+    const disabledUntilDate = data["advancedroundrobin.Disabled_Until"]
+      ? moment(data["advancedroundrobin.Disabled_Until"], "YYYY-MM-DD")
+      : null;
+
     return (
-      <div style={{ padding: '40px' }}>
+      <div style={{ padding: "40px" }}>
         <Form
           layout="vertical"
           labelCol={{ span: 3 }}
@@ -38,7 +37,7 @@ class UnwrappedEditSettingForm extends React.Component {
           }
         >
           <Form.Item label="Owner">
-            {getFieldDecorator('Owner', {
+            {getFieldDecorator("Owner", {
               initialValue: data.Owner.id
             })(
               <Select style={{ width: 200 }} placeholder="Owner">
@@ -51,11 +50,11 @@ class UnwrappedEditSettingForm extends React.Component {
             )}
           </Form.Item>
           <Form.Item label="Module">
-            {getFieldDecorator('Module', {
-              initialValue: data['advancedroundrobin.Module']
+            {getFieldDecorator("Module", {
+              initialValue: data["advancedroundrobin.Module"]
             })(
               <Select style={{ width: 200 }} placeholder="Module">
-                {['Leads', 'Contacts', 'Deals'].map(moduleName => (
+                {["Leads", "Contacts", "Deals"].map(moduleName => (
                   <Select.Option key={moduleName} value={moduleName}>
                     {moduleName}
                   </Select.Option>
@@ -64,23 +63,31 @@ class UnwrappedEditSettingForm extends React.Component {
             )}
           </Form.Item>
           <Form.Item label="Percentage">
-            {getFieldDecorator('Percentage', {
-              initialValue: data['advancedroundrobin.Percent']
-            })(
-              <InputNumber />
-            )}
+            {getFieldDecorator("Percentage", {
+              initialValue: data["advancedroundrobin.Percent"]
+            })(<InputNumber />)}
           </Form.Item>
           <Form.Item label="Email For Notifications">
-            {getFieldDecorator('email', {
+            {getFieldDecorator("email", {
               initialValue: data.Email
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="Field Criteria">
-            {getFieldDecorator('fieldCriteria', {
-              initialValue: data["fieldCriteriaForUI"]
-            })(< FieldCriteriaTable form={form} fieldsForThisModule={data['fieldsForThisModule']} />)}
+          <Form.Item label="Disabled Until (useful for holidays)">
+            {getFieldDecorator("Disabled_Until", {
+              initialValue: disabledUntilDate
+            })(<DatePicker format={"MMM-DD-YYYY"} />)}
           </Form.Item>
-          <Form.Item style={{ position: 'fixed', top: '70px', right: '10px' }}>
+          <Form.Item label="Field Criteria">
+            {getFieldDecorator("fieldCriteria", {
+              initialValue: data["fieldCriteriaForUI"]
+            })(
+              <FieldCriteriaTable
+                form={form}
+                fieldsForThisModule={data["fieldsForThisModule"]}
+              />
+            )}
+          </Form.Item>
+          <Form.Item style={{ position: "fixed", top: "70px", right: "10px" }}>
             <Button type="primary" htmlType="submit">
               Save
             </Button>
@@ -92,5 +99,5 @@ class UnwrappedEditSettingForm extends React.Component {
 }
 
 export const EditSettingForm = Form.create({
-  name: 'edit_round_robin_setting',
+  name: "edit_round_robin_setting"
 })(UnwrappedEditSettingForm);

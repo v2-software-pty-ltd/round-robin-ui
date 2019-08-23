@@ -66,16 +66,11 @@ export async function loadFields(moduleName) {
 export async function updateRoundRobinSetting(newData) {
   await window.ZOHO.embeddedApp.init();
 
-  try {
-    const result = await window.ZOHO.CRM.API.updateRecord({
-      Entity: "advancedroundrobin.Round_Robin_Settings",
-      APIData: newData,
-      Trigger: ["workflow"]
-    });
+  const result = await window.ZOHO.CRM.API.updateRecord({
+    Entity: "advancedroundrobin.Round_Robin_Settings",
+    APIData: newData,
+    Trigger: ["workflow"]
+  });
 
-    debugger;
-    return result;
-  } catch (e) {
-    debugger;
-  }
+  return result;
 }

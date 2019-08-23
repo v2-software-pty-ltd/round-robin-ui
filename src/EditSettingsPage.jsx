@@ -113,6 +113,12 @@ export default class extends React.Component {
         data.Percentage > 99 ? 99 : data.Percentage,
       "advancedroundrobin.Email": data.email,
       advancedroundrobin__Email: data.email,
+      "advancedroundrobin.Disabled_Until": data.Disabled_Until.format(
+        "YYYY-MM-DD"
+      ),
+      advancedroundrobin__Disabled_Until: data.Disabled_Until.format(
+        "YYYY-MM-DD"
+      ),
       Email: data.email
     });
 

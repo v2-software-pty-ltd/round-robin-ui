@@ -10,7 +10,6 @@ function App() {
   });
 
   if (currentPage.page === 'list_settings') {
-    debugger;
     return (
       <div className="App">
         <SettingsPage setPage={setPage} message={currentPage.message} />
