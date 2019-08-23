@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="js/ZSDK.js"></script>
+  <script src="js/ZCrmHelper.js"></script>
+  <style>
+    body {
+      font-family: monospace;
+    }
+
+    #report td, #report th {
+      border: 1px solid black;
+      padding: 5px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="report"></div>
+
+  <script>
+    ZOHO.embeddedApp.init().then(async () => {
+      const { data : convertedLeads } = await ZOHO.CRM.API.searchRecord({ Entity: "Leads", Type: "criteria", Query: `(advancedroundrobin.Round_Robin_Processed:equals:true)`, Converted: true });
+      const { data : roundRobinHistoryRecords } = await ZOHO.CRM.API.getAllRecords({ Entity: 'advancedroundrobin.Round_Robin_History'});
+
+      const convertedLeadsByOwner = convertedLeads.reduce((conversionTallyByOwner, lead) => {
+        const { Owner: { name: ownerName }} = lead;
+        if (!conversionTallyByOwner[ownerName]) {
+          conversionTallyByOwner[ownerName] = 0;
+        }
+        conversionTallyByOwner[ownerName] = conversionTallyByOwner[ownerName] + 1;
+        return conversionTallyByOwner;
+      }, {});
+
+      const leadsAssignedByOwner = roundRobinHistoryRecords.reduce((leadTallyByOwner, lead) => {
+        const { Owner: { name: ownerName } } = lead;
+        if (!leadTallyByOwner[ownerName]) {
+          leadTallyByOwner[ownerName] = 0;
+        }
+        leadTallyByOwner[ownerName] = leadTallyByOwner[ownerName] + 1;
+        return leadTallyByOwner;
+      }, {});
+
+      const ownerDataRows = Object.keys(leadsAssignedByOwner).map((ownerName) => {
+        return `<tr>
+          <td>${ownerName}</td>
+          <td>${leadsAssignedByOwner[ownerName]}</td>
+          <td>${convertedLeadsByOwner[ownerName] || 0}</td>
+          <td>${(((convertedLeadsByOwner[ownerName] || 0) / leadsAssignedByOwner[ownerName]) * 100.0).toFixed(1)}%</td>
+        </tr>`;
+      });
+
+      document.querySelector('#report').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Lead Owner</th>
+              <th>Num Leads Assigned</th>
+              <th>Num Leads Converted</th>
+              <th>Conversion Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${ownerDataRows}
+          </tbody>
+        </table>
+      `;
+    });
+  </script>
+
+</body>
+
+</html>
