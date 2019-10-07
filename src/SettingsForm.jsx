@@ -18,8 +18,8 @@ class UnwrappedEditSettingForm extends React.Component {
     const { data, activeUsers, form } = this.props;
     const { getFieldDecorator } = form;
 
-    const disabledUntilDate = data["advancedroundrobin.Disabled_Until"]
-      ? moment(data["advancedroundrobin.Disabled_Until"], "YYYY-MM-DD")
+    const disabledUntilDate = data["advancedroundrobin__Disabled_Until"]
+      ? moment(data["advancedroundrobin__Disabled_Until"], "YYYY-MM-DD")
       : null;
 
     return (
@@ -51,7 +51,7 @@ class UnwrappedEditSettingForm extends React.Component {
           </Form.Item>
           <Form.Item label="Module">
             {getFieldDecorator("Module", {
-              initialValue: data["advancedroundrobin.Module"]
+              initialValue: data["advancedroundrobin__Module"]
             })(
               <Select style={{ width: 200 }} placeholder="Module">
                 {["Leads", "Contacts", "Deals"].map(moduleName => (
@@ -64,7 +64,7 @@ class UnwrappedEditSettingForm extends React.Component {
           </Form.Item>
           <Form.Item label="Percentage">
             {getFieldDecorator("Percentage", {
-              initialValue: data["advancedroundrobin.Percent"]
+              initialValue: data["advancedroundrobin__Percent"]
             })(<InputNumber />)}
           </Form.Item>
           <Form.Item label="Email For Notifications">

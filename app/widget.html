@@ -23,8 +23,8 @@
 
   <script>
     ZOHO.embeddedApp.init().then(async () => {
-      const { data : convertedLeads } = await ZOHO.CRM.API.searchRecord({ Entity: "Leads", Type: "criteria", Query: `(advancedroundrobin.Round_Robin_Processed:equals:true)`, Converted: true });
-      const { data : roundRobinHistoryRecords } = await ZOHO.CRM.API.getAllRecords({ Entity: 'advancedroundrobin.Round_Robin_History'});
+      const { data : convertedLeads } = await ZOHO.CRM.API.searchRecord({ Entity: "Leads", Type: "criteria", Query: `(advancedroundrobin__Round_Robin_Processed:equals:true)`, Converted: true });
+      const { data : roundRobinHistoryRecords } = await ZOHO.CRM.API.getAllRecords({ Entity: 'advancedroundrobin__Round_Robin_History'});
 
       const convertedLeadsByOwner = convertedLeads.reduce((conversionTallyByOwner, lead) => {
         const { Owner: { name: ownerName }} = lead;

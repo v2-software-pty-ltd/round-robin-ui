@@ -69,13 +69,15 @@ function composeEditableCell(fieldsForThisModule) {
   return class EditableCell extends React.Component {
     getInput = () => {
       if (this.props.dataIndex === 'fieldName') {
-        return <Select style={{ width: 200 }} placeholder="Field Name">
-          {fieldsForThisModule.map(field => (
-            <Select.Option key={field.api_name} value={field.api_name}>
-              {field.field_label}
-            </Select.Option>
-          ))}
-        </Select>
+        return (
+          <Select style={{ width: 200 }} placeholder="Field Name" showSearch>
+            {fieldsForThisModule.map(field => (
+              <Select.Option key={field.api_name} value={field.api_name}>
+                {field.field_label}
+              </Select.Option>
+            ))}
+          </Select>
+        );
       } else if (this.props.dataIndex === 'comparisonType') {
         return <Select style={{ width: 200 }} placeholder="Comparison Type">
           {comparisonTypes.map(option => (
@@ -156,7 +158,7 @@ export class FieldCriteriaTable extends React.Component {
       width: '40%',
       editable: true,
       desiredInputType: 'tags',
-      render: (tags) => {
+      render: (tags, ...args) => {
         return <Fragment>
           {tags.map((tagName) => <Tag key={tagName} closable={false}>{tagName}</Tag>)}
         </Fragment>

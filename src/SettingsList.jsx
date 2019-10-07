@@ -107,42 +107,53 @@ export class SettingsList extends React.Component {
     }
   }
 
+  addSettingButton = () => {
+    return (<div style={{ margin: '16px' }}>
+      <Button onClick={this.props.handleAddSetting}>
+        Add New Setting
+      </Button>
+    </div>);
+  }
+
   message = () => {
     if (this.props.message) {
       return <Alert message={this.props.message} type="success" />;
     }
   }
 
-  render() {
+  settingsTable = () => {
+    if (this.props.data.length === 0) {
+      return <h1>Time to add your first setting</h1>;
+    }
     const columns = [
       {
-        title: "Owner",
+        title: 'Owner',
         dataIndex: "ownerName",
         key: "ownerName",
         ...this.getColumnSearchProps("ownerName", "Owner")
       },
       {
         title: "Percentage",
-        dataIndex: "advancedroundrobin.Percent",
-        key: "advancedroundrobin.Percent"
+        dataIndex: "advancedroundrobin__Percent",
+        key: "advancedroundrobin__Percent"
       },
       {
         title: "Module",
-        dataIndex: "advancedroundrobin.Module",
-        key: "advancedroundrobin.Module",
-        ...this.getColumnSearchProps("advancedroundrobin.Module", "Module")
+        dataIndex: "advancedroundrobin__Module",
+        key: "advancedroundrobin__Module",
+        ...this.getColumnSearchProps("advancedroundrobin__Module", "Module")
       },
       {
         title: "Disabled Until",
-        dataIndex: "advancedroundrobin.Disabled_Until",
-        key: "advancedroundrobin.Disabled_Until"
+        dataIndex: "advancedroundrobin__Disabled_Until",
+        key: "advancedroundrobin__Disabled_Until"
       },
       {
         title: "Field Criteria",
-        dataIndex: "advancedroundrobin.Field_Criteria",
-        key: "advancedroundrobin.Field_Criteria",
+        dataIndex: "advancedroundrobin__Field_Criteria",
+        key: "advancedroundrobin__Field_Criteria",
         ...this.getColumnSearchProps(
-          "advancedroundrobin.Field_Criteria",
+          "advancedroundrobin__Field_Criteria",
           "Field Criteria"
         )
       },
@@ -160,19 +171,24 @@ export class SettingsList extends React.Component {
       }
     ];
 
+    return (<Table
+      key={this.state.columnIndex}
+      columns={columns}
+      dataSource={this.props.data}
+      expandedRowRender={this.expandedRowRender}
+      onChange={this.handleChange}
+    />);
+  }
+
+  render() {
     return (
       <Layout>
         <Layout.Content style={{ background: '#fff' }}>
           <div style={{ margin: '8px' }}>
             {this.message()}
+            {this.addSettingButton()}
             {this.clearFiltersButton()}
-            <Table
-              key={this.state.columnIndex}
-              columns={columns}
-              dataSource={this.props.data}
-              expandedRowRender={this.expandedRowRender}
-              onChange={this.handleChange}
-            />
+            {this.settingsTable()}
           </div>
         </Layout.Content>
       </Layout>

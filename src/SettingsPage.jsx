@@ -3,7 +3,7 @@ import { Col, Layout, Row, Spin, Typography } from 'antd';
 import 'antd/dist/antd.css';
 
 import { SettingsList } from './SettingsList';
-import { loadRoundRobinSettings } from './utils/callCRMAPI';
+import { addNewSetting, loadRoundRobinSettings } from './utils/callCRMAPI';
 
 export default class extends React.Component {
   state = { roundRobinSettings: [], loading: true, error: null };
@@ -64,11 +64,18 @@ export default class extends React.Component {
     });
   }
 
+  handleAddSetting = async () => {
+    this.setState({ loading: true });
+    const newRecordData = await addNewSetting();
+    this.handleEditRecord(newRecordData.details.id);
+  }
+
   content() {
-    if (!this.state.loading && this.state.roundRobinSettings.length) {
+    if (!this.state.loading && this.state.roundRobinSettings) {
       return (<SettingsList
         data={this.state.roundRobinSettings}
         handleEditRecord={this.handleEditRecord}
+        handleAddSetting={this.handleAddSetting}
         message={this.props.message}
       />);
     }

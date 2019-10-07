@@ -34,7 +34,7 @@ export default class extends React.Component {
       const activeUsers = await loadActiveUsers();
 
       const rawFieldCriteria =
-        roundRobinSetting["advancedroundrobin.Field_Criteria"];
+        roundRobinSetting["advancedroundrobin__Field_Criteria"];
 
       const fieldCriteriaForUI = processFieldCriteria(rawFieldCriteria).map(
         row => {
@@ -45,7 +45,7 @@ export default class extends React.Component {
         }
       );
 
-      const moduleName = roundRobinSetting["advancedroundrobin.Module"];
+      const moduleName = roundRobinSetting["advancedroundrobin__Module"];
 
       const fieldsForThisModule = await loadFields(moduleName);
 
@@ -102,24 +102,15 @@ export default class extends React.Component {
 
     await updateRoundRobinSetting({
       ...this.state.roundRobinSetting,
-      "advancedroundrobin.Field_Criteria": fieldCriteriaJSON,
       advancedroundrobin__Field_Criteria: fieldCriteriaJSON,
-      "advancedroundrobin.Module": data.Module,
       advancedroundrobin__Module: data.Module,
       Owner: { id: data.Owner },
-      "advancedroundrobin.Percent":
-        data.Percentage > 99 ? 99 : data.Percentage,
       advancedroundrobin__Percent:
         data.Percentage > 99 ? 99 : data.Percentage,
-      "advancedroundrobin.Email": data.email,
-      advancedroundrobin__Email: data.email,
-      "advancedroundrobin.Disabled_Until": data.Disabled_Until.format(
+      Email: data.email,
+      advancedroundrobin__Disabled_Until: data.Disabled_Until && data.Disabled_Until.format(
         "YYYY-MM-DD"
-      ),
-      advancedroundrobin__Disabled_Until: data.Disabled_Until.format(
-        "YYYY-MM-DD"
-      ),
-      Email: data.email
+      )
     });
 
     this.setState({ loading: false });
