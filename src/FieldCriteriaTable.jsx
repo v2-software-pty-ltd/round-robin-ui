@@ -65,12 +65,17 @@ const comparisonTypes = [
 
 const EditableContext = React.createContext();
 
-function composeEditableCell(fieldsForThisModule) {
+function composeEditableCell(fieldsForThisModule, onBlur) {
   return class EditableCell extends React.Component {
     getInput = () => {
       if (this.props.dataIndex === 'fieldName') {
         return (
-          <Select style={{ width: 200 }} placeholder="Field Name" showSearch>
+          <Select
+            style={{ width: 200 }}
+            placeholder="Field Name"
+            showSearch
+            onBlur={onBlur}
+          >
             {fieldsForThisModule.map(field => (
               <Select.Option key={field.api_name} value={field.api_name}>
                 {field.field_label}
@@ -79,15 +84,21 @@ function composeEditableCell(fieldsForThisModule) {
           </Select>
         );
       } else if (this.props.dataIndex === 'comparisonType') {
-        return <Select style={{ width: 200 }} placeholder="Comparison Type">
-          {comparisonTypes.map(option => (
-            <Select.Option key={option.value} value={option.value}>
-              {option.label}
-            </Select.Option>
-          ))}
-        </Select>
+        return (
+          <Select
+            style={{ width: 200 }}
+            placeholder="Comparison Type"
+            onBlur={onBlur}
+          >
+            {comparisonTypes.map(option => (
+              <Select.Option key={option.value} value={option.value}>
+                {option.label}
+              </Select.Option>
+            ))}
+          </Select>
+        );
       } else if (this.props.dataIndex === 'possibleValues') {
-        return <TagInput />;
+        return <TagInput onBlur={onBlur}/>;
       }
       return <Input />;
     };
@@ -197,7 +208,7 @@ export class FieldCriteriaTable extends React.Component {
 
   state = {
     editingKey: '',
-    loading: true,
+    loading: true
   };
 
   isEditing = record => record.key === this.state.editingKey;
@@ -231,17 +242,19 @@ export class FieldCriteriaTable extends React.Component {
   }
 
   edit(key) {
-    this.setState({ editingKey: key });
+    this.setState({ editingKey: key});
   }
 
   addRow = () => {
     const newData = [...this.props.value];
     newData.push({ possibleValues: [] });
-
     this.props.onChange(newData);
   }
 
   render() {
+    const onBlur = () => {
+      this.save(this.props.form, this.state.editingKey);
+    }
     const fieldCriteriaColumns = this.fieldCriteriaColumns.map(col => {
       if (!col.editable) {
         return col;
@@ -259,7 +272,7 @@ export class FieldCriteriaTable extends React.Component {
 
     const components = {
       body: {
-        cell: composeEditableCell(this.props.fieldsForThisModule),
+        cell: composeEditableCell(this.props.fieldsForThisModule,onBlur, this.props.form),
       },
     };
 
