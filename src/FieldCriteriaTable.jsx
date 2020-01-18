@@ -255,6 +255,7 @@ export class FieldCriteriaTable extends React.Component {
     const onBlur = () => {
       this.save(this.props.form, this.state.editingKey);
     }
+
     const fieldCriteriaColumns = this.fieldCriteriaColumns.map(col => {
       if (!col.editable) {
         return col;
@@ -272,7 +273,7 @@ export class FieldCriteriaTable extends React.Component {
 
     const components = {
       body: {
-        cell: composeEditableCell(this.props.fieldsForThisModule,onBlur, this.props.form),
+        cell: composeEditableCell(this.props.fieldsForThisModule, onBlur),
       },
     };
 
