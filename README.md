@@ -9,5 +9,6 @@ The widget is built using React JS leveraging the AntD UI library.
 
 # To Do
 
-[] Set up auto save as soon as someone alters a row in field criteria
-[] Allow users to delete a row in the field criteria subform
+[ ] Set up auto save as soon as someone alters a row in field criteria
+
+[ ] Allow users to delete a row in the field criteria subform
