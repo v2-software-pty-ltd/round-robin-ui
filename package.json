@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.9.0",
-    "react-scripts": "^3.4.1",
-    "zoho-extension-toolkit": "^0.19.6"
+    "react-scripts": "^3.4.3",
+    "zoho-extension-toolkit": "^0.25.0"
   }
 }
