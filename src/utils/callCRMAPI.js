@@ -14,9 +14,10 @@ export async function loadRoundRobinSettings() {
   } = roundRobinSettingResponse;
 
   return roundRobinSettings.map((roundRobinSetting) => {
+    const ownerName = roundRobinSetting['Owner']?.name ?? roundRobinSetting['advancedroundrobin.Owner']?.name ?? roundRobinSetting['advancedroundrobin.advancedroundrobin.Owner']?.name;
     return {
       ...roundRobinSetting,
-      ownerName: roundRobinSetting['Owner'].name,
+      ownerName,
       key: roundRobinSetting.id
     };
   });

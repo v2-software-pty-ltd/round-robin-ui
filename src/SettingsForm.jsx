@@ -38,7 +38,7 @@ class UnwrappedEditSettingForm extends React.Component {
         >
           <Form.Item label="Owner">
             {getFieldDecorator("Owner", {
-              initialValue: data.Owner.id
+              initialValue: data['Owner']?.id ?? data['advancedroundrobin.Owner']?.id ?? data['advancedroundrobin.advancedroundrobin.Owner']?.id
             })(
               <Select style={{ width: 200 }} placeholder="Owner">
                 {activeUsers.map(user => (
