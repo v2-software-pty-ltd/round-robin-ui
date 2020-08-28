@@ -6,11 +6,11 @@ import { EditSettingForm } from "./SettingsForm";
 import {
   loadActiveUsers,
   loadRoundRobinSetting,
-  updateRoundRobinSetting
+  updateRoundRobinSetting,
 } from "./utils/callCRMAPI";
 import {
   processFieldCriteria,
-  generateFieldCriteriaJSON
+  generateFieldCriteriaJSON,
 } from "./utils/processFieldCriteria";
 import { loadFields } from "./utils/callCRMAPI";
 
@@ -19,11 +19,27 @@ export default class extends React.Component {
     roundRobinSetting: null,
     loading: true,
     error: null,
-    activeUsers: []
+    activeUsers: [],
   };
 
   componentDidMount() {
     this.fetchRoundRobinSetting();
+  }
+
+  getAvailabilityData() {
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    return days.map((day) => {
+      return { day: day, value: false, startTime: "", endTime: "" };
+    });
   }
 
   fetchRoundRobinSetting = async () => {
@@ -37,10 +53,10 @@ export default class extends React.Component {
         roundRobinSetting["advancedroundrobin__Field_Criteria"];
 
       const fieldCriteriaForUI = processFieldCriteria(rawFieldCriteria).map(
-        row => {
+        (row) => {
           return {
             ...row,
-            key: `${row.fieldName}${row.comparisonType}`
+            key: `${row.fieldName}${row.comparisonType}`,
           };
         }
       );
@@ -48,15 +64,18 @@ export default class extends React.Component {
       const moduleName = roundRobinSetting["advancedroundrobin__Module"];
 
       const fieldsForThisModule = await loadFields(moduleName);
-
       this.setState({
         loading: false,
         roundRobinSetting: {
           ...roundRobinSetting,
           fieldCriteriaForUI,
-          fieldsForThisModule
+          fieldsForThisModule,
+          advancedroundrobin__Complex_Availability: roundRobinSetting
+            .advancedroundrobin__Complex_Availability.length
+            ? roundRobinSetting.advancedroundrobin__Complex_Availability
+            : this.getAvailabilityData(),
         },
-        activeUsers
+        activeUsers,
       });
     } catch (e) {
       this.error = e;
@@ -73,7 +92,7 @@ export default class extends React.Component {
             position: "fixed",
             left: 0,
             zIndex: 1,
-            width: "100%"
+            width: "100%",
           }}
         >
           <Row gutter={16} style={{ width: "100%" }}>
@@ -83,7 +102,7 @@ export default class extends React.Component {
                   style={{
                     padding: "5px",
                     alignSelf: "center",
-                    color: "white"
+                    color: "white",
                   }}
                 >
                   Edit Round Robin Setting
@@ -103,23 +122,23 @@ export default class extends React.Component {
     await updateRoundRobinSetting({
       ...this.state.roundRobinSetting,
       advancedroundrobin__Field_Criteria: fieldCriteriaJSON,
+      advancedroundrobin__Complex_Availability:
+        data.advancedroundrobin__Complex_Availability,
       advancedroundrobin__Module: data.Module,
       Owner: { id: data.Owner },
-      advancedroundrobin__Percent:
-        data.Percentage > 99 ? 99 : data.Percentage,
+      advancedroundrobin__Percent: data.Percentage > 99 ? 99 : data.Percentage,
       Email: data.email,
-      advancedroundrobin__Disabled_Until: data.Disabled_Until && data.Disabled_Until.format(
-        "YYYY-MM-DD"
-      )
+      advancedroundrobin__Disabled_Until:
+        data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
     });
 
     this.setState({ loading: false });
 
     this.props.setPage({
-      page: 'list_settings',
-      message: 'Setting updated'
+      page: "list_settings",
+      message: "Setting updated",
     });
-  }
+  };
 
   content() {
     if (!this.state.loading && this.state.roundRobinSetting) {
