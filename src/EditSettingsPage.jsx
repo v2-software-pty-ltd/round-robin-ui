@@ -126,7 +126,7 @@ export default class extends React.Component {
         data.advancedroundrobin__Complex_Availability,
       advancedroundrobin__Module: data.Module,
       Owner: { id: data.Owner },
-      advancedroundrobin__Percent: data.Percentage > 99 ? 99 : data.Percentage,
+      advancedroundrobin__Percent: data.Percentage > 100 ? 100 : data.Percentage,
       Email: data.email,
       advancedroundrobin__Disabled_Until:
         data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
