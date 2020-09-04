@@ -1,93 +1,104 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from "react";
 
-import { TagInput } from './TagInput';
+import { TagInput } from "./TagInput";
 
-import {
-  Button,
-  Form,
-  Popconfirm,
-  Input,
-  Select,
-  Table,
-  Tag
-} from 'antd';
+import { Button, Form, Input, Select, Table, Tag } from "antd";
 
 const comparisonTypes = [
   {
-    label: 'Not Equal',
-    value: 'notequal'
+    label: "Not Equal",
+    value: "notequal",
   },
   {
-    label: 'Equals',
-    value: 'equal'
+    label: "Equals",
+    value: "equal",
   },
   {
-    label: 'Contains',
-    value: 'contains'
+    label: "Contains",
+    value: "contains",
   },
   {
     label: "Doesn't Contain",
-    value: 'notcontains'
+    value: "notcontains",
   },
   {
     label: "Starts With",
-    value: 'starts_with'
+    value: "starts_with",
   },
   {
     label: "Doesn't Start With",
-    value: 'not_starts_with'
+    value: "not_starts_with",
   },
   {
-    label: 'Multi Select Equal',
-    value: 'multi-select-equal'
+    label: "Multi Select Equal",
+    value: "multi-select-equal",
   },
   {
-    label: 'Not Empty',
-    value: 'notempty'
+    label: "Not Empty",
+    value: "notempty",
   },
   {
-    label: '>=',
-    value: '>='
+    label: ">=",
+    value: ">=",
   },
   {
-    label: '>',
-    value: '>'
+    label: ">",
+    value: ">",
   },
   {
-    label: '<=',
-    value: '<='
+    label: "<=",
+    value: "<=",
   },
   {
-    label: '<',
-    value: '<'
-  }
+    label: "<",
+    value: "<",
+  },
 ];
 
 const EditableContext = React.createContext();
 
-function composeEditableCell(fieldsForThisModule) {
+function composeEditableCell(props, save) {
+  const { fieldsForThisModule, form } = props;
+
   return class EditableCell extends React.Component {
-    getInput = () => {
-      if (this.props.dataIndex === 'fieldName') {
+    handleOnChange = (record) => {
+      save(form, record.key);
+    };
+
+    getInput = (record) => {
+      if (this.props.dataIndex === "fieldName") {
         return (
-          <Select style={{ width: 200 }} placeholder="Field Name" showSearch>
-            {fieldsForThisModule.map(field => (
+          <Select
+            style={{ width: 200 }}
+            placeholder="Field Name"
+            showSearch
+            onChange={() => this.handleOnChange(record)}
+          >
+            {fieldsForThisModule.map((field) => (
               <Select.Option key={field.api_name} value={field.api_name}>
                 {field.field_label}
               </Select.Option>
             ))}
           </Select>
         );
-      } else if (this.props.dataIndex === 'comparisonType') {
-        return <Select style={{ width: 200 }} placeholder="Comparison Type">
-          {comparisonTypes.map(option => (
-            <Select.Option key={option.value} value={option.value}>
-              {option.label}
-            </Select.Option>
-          ))}
-        </Select>
-      } else if (this.props.dataIndex === 'possibleValues') {
-        return <TagInput />;
+      } else if (this.props.dataIndex === "comparisonType") {
+        return (
+          <Select
+            style={{ width: 200 }}
+            placeholder="Comparison Type"
+            onChange={() => this.handleOnChange(record)}
+          >
+            {comparisonTypes.map((option) => (
+              <Select.Option key={option.value} value={option.value}>
+                {option.label}
+              </Select.Option>
+            ))}
+          </Select>
+        );
+      } else if (this.props.dataIndex === "possibleValues") {
+        return (
+          <TagInput handleOnChange={this.handleOnChange} record={record} />
+        );
       }
       return <Input />;
     };
@@ -117,138 +128,143 @@ function composeEditableCell(fieldsForThisModule) {
                   },
                 ],
                 initialValue: record[dataIndex],
-              })(this.getInput())}
+              })(this.getInput(record))}
             </Form.Item>
           ) : (
-              children
-            )}
+            children
+          )}
         </td>
       );
     };
 
     render() {
-      return <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>;
+      return (
+        <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
+      );
     }
-  }
+  };
 }
 
 export class FieldCriteriaTable extends React.Component {
-
   fieldCriteriaColumns = [
     {
-      title: 'Field Name',
-      dataIndex: 'fieldName',
-      key: 'fieldName',
+      title: "Field Name",
+      dataIndex: "fieldName",
+      key: "fieldName",
       editable: true,
-      desiredInputType: 'select',
-      possibleOptions: ['TODO']
+      desiredInputType: "select",
+      possibleOptions: ["TODO"],
     },
     {
-      title: 'Comparison Type',
-      dataIndex: 'comparisonType',
-      key: 'comparisonType',
+      title: "Comparison Type",
+      dataIndex: "comparisonType",
+      key: "comparisonType",
       editable: true,
-      desiredInputType: 'select',
-      possibleOptions: comparisonTypes
+      desiredInputType: "select",
+      possibleOptions: comparisonTypes,
     },
     {
-      title: 'Possible Values',
-      dataIndex: 'possibleValues',
-      key: 'possibleValues',
-      width: '40%',
+      title: "Possible Values",
+      dataIndex: "possibleValues",
+      key: "possibleValues",
+      width: "40%",
       editable: true,
-      desiredInputType: 'tags',
+      desiredInputType: "tags",
       render: (tags, ...args) => {
-        return <Fragment>
-          {tags.map((tagName) => <Tag key={tagName} closable={false}>{tagName}</Tag>)}
-        </Fragment>
-      }
+        return (
+          <Fragment>
+            {tags.map((tagName) => (
+              <Tag key={tagName} closable={false}>
+                {tagName}
+              </Tag>
+            ))}
+          </Fragment>
+        );
+      },
     },
     {
-      title: 'Save',
-      dataIndex: 'operation',
+      title: "Remove",
+      dataIndex: "operation",
       render: (text, record) => {
-        const { editingKey } = this.state;
-        const editable = this.isEditing(record);
-        return editable ? (
+        return (
           <span>
             <EditableContext.Consumer>
-              {form => (
+              {(form) => (
                 <Button
-                  onClick={() => this.save(form, record.key)}
+                  onClick={() => this.delete(form, record.key)}
                   style={{ marginRight: 8 }}
                 >
-                  Save
+                  Remove
                 </Button>
               )}
             </EditableContext.Consumer>
-            <Popconfirm title="Are you sure you want to cancel?" onConfirm={() => this.cancel(record.key)}>
-              <Button>Cancel</Button>
-            </Popconfirm>
           </span>
-        ) : (
-            <Button disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
-              Edit
-            </Button>
-          );
+        );
       },
     },
   ];
 
   state = {
-    editingKey: '',
+    editingKey: "",
     loading: true,
   };
 
-  isEditing = record => record.key === this.state.editingKey;
+  isEditing = (record) => record.key === this.state.editingKey;
 
   cancel = () => {
-    this.setState({ editingKey: '' });
+    this.setState({ editingKey: "" });
   };
 
-  save(form, key) {
+  save = (form, key) => {
     form.validateFields((error, row) => {
       if (error) {
         return;
-      }
-
-      const newData = [...this.props.value];
-      const index = newData.findIndex(item => key === item.key);
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        this.setState({ editingKey: '' });
       } else {
-        newData.push(row);
-        this.setState({ editingKey: '' });
+        const newData = [...this.props.value];
+        const index = newData.findIndex((item) => key === item.key);
+        if (index > -1) {
+          const item = newData[index];
+          newData.splice(index, 1, {
+            ...item,
+            ...row,
+          });
+          this.setState({ editingKey: "" });
+        } else {
+          newData.push(row);
+          this.setState({ editingKey: "" });
+        }
+        this.props.onChange(newData);
       }
-
-      this.props.onChange(newData);
     });
-  }
+  };
 
   edit(key) {
-    this.setState({ editingKey: key });
+    if (this.state.editingKey !== key) {
+      this.setState({ editingKey: key });
+    }
   }
 
   addRow = () => {
     const newData = [...this.props.value];
+    this.setState({ editingKey: undefined });
     newData.push({ possibleValues: [] });
+    this.props.onChange(newData);
+  };
 
+  delete(form, key) {
+    const newData = this.props.value.filter((item) => key !== item.key);
+    this.setState({ editingKey: "" });
     this.props.onChange(newData);
   }
 
   render() {
-    const fieldCriteriaColumns = this.fieldCriteriaColumns.map(col => {
+    const fieldCriteriaColumns = this.fieldCriteriaColumns.map((col) => {
       if (!col.editable) {
         return col;
       }
       return {
         ...col,
-        onCell: record => ({
+        onCell: (record) => ({
           record,
           dataIndex: col.dataIndex,
           title: col.title,
@@ -256,13 +272,11 @@ export class FieldCriteriaTable extends React.Component {
         }),
       };
     });
-
     const components = {
       body: {
-        cell: composeEditableCell(this.props.fieldsForThisModule),
+        cell: composeEditableCell(this.props, this.save),
       },
     };
-
     return (
       <Fragment>
         <Button onClick={this.addRow}>Add Row</Button>
@@ -275,6 +289,13 @@ export class FieldCriteriaTable extends React.Component {
             rowClassName="editable-row"
             pagination={{
               onChange: this.cancel,
+            }}
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {
+                  this.edit(record.key);
+                },
+              };
             }}
           />
         </EditableContext.Provider>
