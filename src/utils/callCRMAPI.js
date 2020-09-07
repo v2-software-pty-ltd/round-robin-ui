@@ -34,14 +34,19 @@ export async function loadRoundRobinSetting(recordID) {
 
   const roundRobinAvailability = await loadRoundRobinAvailability();
 
-  const availabilityRecordsForThisSetting = roundRobinAvailability.filter(
-    (item) => item.advancedroundrobin__Round_Robin_Setting.id === recordID
-  );
+  let availabilityRecordsForThisSetting = [];
+
+  if (roundRobinAvailability) {
+    availabilityRecordsForThisSetting = roundRobinAvailability.filter(
+      (item) => item.advancedroundrobin__Round_Robin_Setting.id === recordID
+    );
+  }
+
   return {
     ...roundRobinSetting[0],
     round_robin_availability_id: availabilityRecordsForThisSetting.length
       ? availabilityRecordsForThisSetting[0].id
-      : null,
+      : undefined,
     advancedroundrobin__Complex_Availability: availabilityRecordsForThisSetting.length
       ? JSON.parse(
           availabilityRecordsForThisSetting[0]
