@@ -38,7 +38,9 @@ export async function loadRoundRobinSetting(recordID) {
 
   if (roundRobinAvailability) {
     availabilityRecordsForThisSetting = roundRobinAvailability.filter(
-      (item) => item.advancedroundrobin__Round_Robin_Setting.id === recordID
+      (item) => {
+        return item.advancedroundrobin__Round_Robin_Setting?.id === recordID;
+      }
     );
   }
 
