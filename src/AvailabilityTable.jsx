@@ -116,7 +116,7 @@ export class AvailabilityTable extends React.Component {
       <Fragment>
         <EditableContext.Provider value={this.props.form}>
           <Table
-            key="day"
+            rowKey="day"
             bordered
             dataSource={this.props.value}
             columns={availabilitycolumns}
