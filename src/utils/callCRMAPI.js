@@ -46,15 +46,11 @@ export async function loadRoundRobinSetting(recordID) {
 
   return {
     ...roundRobinSetting[0],
-    round_robin_availability_id: availabilityRecordsForThisSetting.length
-      ? availabilityRecordsForThisSetting[0].id
-      : undefined,
-    advancedroundrobin__Complex_Availability: availabilityRecordsForThisSetting.length
-      ? JSON.parse(
-          availabilityRecordsForThisSetting[0]
-            .advancedroundrobin__Complex_Availability
-        )
-      : [],
+    round_robin_availability_id:
+      availabilityRecordsForThisSetting[0]?.id || undefined,
+    advancedroundrobin__Complex_Availability:
+      availabilityRecordsForThisSetting[0]
+        ?.advancedroundrobin__Complex_Availability || [],
   };
 }
 
