@@ -72,6 +72,11 @@ function composeEditableCell(props, save) {
             style={{ width: 200 }}
             placeholder="Field Name"
             showSearch
+            filterOption={(input, option) =>
+              option.props.children
+                .toLowerCase()
+                .indexOf(input.toLowerCase()) >= 0
+            }
             onChange={() => this.handleOnChange(record)}
           >
             {fieldsForThisModule.map((field) => (
