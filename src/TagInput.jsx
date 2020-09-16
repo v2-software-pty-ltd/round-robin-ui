@@ -42,7 +42,6 @@ export class TagInput extends React.Component {
   render() {
     const { inputVisible, inputValue } = this.state;
     const { value: tags } = this.props;
-    console.log("TagInput -> render -> tags", tags);
 
     return (
       <div>
