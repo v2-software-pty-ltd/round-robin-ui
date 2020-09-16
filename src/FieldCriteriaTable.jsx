@@ -129,7 +129,7 @@ function composeEditableCell(props, save) {
                 rules: [
                   {
                     required: true,
-                    message: `Please Input ${title}!`,
+                    message: `Please Input ${title}`,
                   },
                 ],
                 initialValue: record[dataIndex],
