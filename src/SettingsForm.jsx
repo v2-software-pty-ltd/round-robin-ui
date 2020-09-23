@@ -15,6 +15,13 @@ const validateAndSubmit = (e, validateFields, submitHandler) => {
 };
 
 class UnwrappedEditSettingForm extends React.Component {
+  componentDidMount() {
+    window.addEventListener("beforeunload", (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    });
+  }
+
   render() {
     const { data, activeUsers, form } = this.props;
     const { getFieldDecorator } = form;
