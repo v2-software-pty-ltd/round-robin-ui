@@ -1,9 +1,10 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import { TagInput } from "./TagInput";
 
 import { Button, Select, Table } from "antd";
 import { Controller, useFieldArray } from "react-hook-form";
+import { loadFields } from "./utils/callCRMAPI";
 
 const comparisonTypes = [
   {
@@ -56,15 +57,31 @@ const comparisonTypes = [
   },
 ];
 
-export const FieldCriteriaTable = ({
-  control,
-  fieldsForThisModule,
-  errors,
-}) => {
+export const FieldCriteriaTable = ({ control, errors, watch }) => {
+  const watchModule = watch("Module");
+
+  const [fieldsForThisModule, setfieldsForThisModule] = useState([]);
+
   const { fields, append, remove } = useFieldArray({
     control: control,
     name: "fieldCriteria",
   });
+
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchfields() {
+      const fields = await loadFields(watchModule);
+      if (!isCancelled) {
+        setfieldsForThisModule(fields);
+      }
+    }
+
+    fetchfields();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [watchModule]);
 
   const ErrorMessage = ({ msg }) => {
     return <div style={{ color: "red" }}>{msg}</div>;

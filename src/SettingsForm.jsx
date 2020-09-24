@@ -17,7 +17,7 @@ export const EditSettingForm = (props) => {
 
   const { data, activeUsers, onSubmit } = props;
 
-  const { control, handleSubmit, errors } = useForm({
+  const { control, handleSubmit, errors, watch } = useForm({
     defaultValues: {
       Owner:
         data["Owner"]?.id ??
@@ -95,6 +95,7 @@ export const EditSettingForm = (props) => {
             control={control}
             fieldsForThisModule={data["fieldsForThisModule"]}
             errors={errors}
+            watch={watch}
           />
         </Form.Item>
         <Form.Item label="Availability">

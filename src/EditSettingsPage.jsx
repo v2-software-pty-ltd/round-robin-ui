@@ -12,7 +12,6 @@ import {
   processFieldCriteria,
   generateFieldCriteriaJSON,
 } from "./utils/processFieldCriteria";
-import { loadFields } from "./utils/callCRMAPI";
 
 export default class extends React.Component {
   state = {
@@ -61,15 +60,11 @@ export default class extends React.Component {
         }
       );
 
-      const moduleName = roundRobinSetting["advancedroundrobin__Module"];
-
-      const fieldsForThisModule = await loadFields(moduleName);
       this.setState({
         loading: false,
         roundRobinSetting: {
           ...roundRobinSetting,
           fieldCriteriaForUI,
-          fieldsForThisModule,
           advancedroundrobin__Complex_Availability: roundRobinSetting
             .advancedroundrobin__Complex_Availability.length
             ? JSON.parse(
