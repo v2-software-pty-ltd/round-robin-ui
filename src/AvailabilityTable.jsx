@@ -1,12 +1,16 @@
-import React, { Fragment } from "react";
+import React from "react";
 import moment from "moment";
 
 import { Table, Checkbox, TimePicker } from "antd";
+import { Controller, useFieldArray } from "react-hook-form";
 
-const EditableContext = React.createContext();
+export const AvailabilityTable = ({ control }) => {
+  const { fields } = useFieldArray({
+    control,
+    name: "advancedroundrobin__Complex_Availability",
+  });
 
-export class AvailabilityTable extends React.Component {
-  availabilitycolumns = [
+  const availabilitycolumns = [
     {
       title: "Day of the Week",
       dataIndex: "day",
@@ -18,9 +22,16 @@ export class AvailabilityTable extends React.Component {
       editable: false,
       render: (text, record, index) => {
         return (
-          <Checkbox
-            checked={record.value}
-            onChange={(e) => this.saveAvailable(e, index)}
+          <Controller
+            control={control}
+            defaultValue={record.value}
+            name={`advancedroundrobin__Complex_Availability[${index}].available`}
+            render={({ onChange, value }) => (
+              <Checkbox
+                checked={value}
+                onChange={(e) => onChange(e.target.checked)}
+              />
+            )}
           />
         );
       },
@@ -31,10 +42,17 @@ export class AvailabilityTable extends React.Component {
       editable: false,
       render: (text, record, index) => {
         return (
-          <TimePicker
-            allowClear={false}
-            value={moment(record.startTime || "00:00:00", "HH:mm:ss")}
-            onChange={(time) => this.saveStartTime(time, index)}
+          <Controller
+            control={control}
+            defaultValue={record.startTime}
+            name={`advancedroundrobin__Complex_Availability[${index}].startTime`}
+            render={({ onChange, value }) => (
+              <TimePicker
+                allowClear={false}
+                value={moment(value || "00:00:00", "HH:mm:ss")}
+                onChange={(time) => onChange(moment(time).format("HH:mm:ss"))}
+              />
+            )}
           />
         );
       },
@@ -45,88 +63,30 @@ export class AvailabilityTable extends React.Component {
       editable: false,
       render: (text, record, index) => {
         return (
-          <TimePicker
-            allowClear={false}
-            value={moment(record.endTime || "00:00:00", "HH:mm:ss")}
-            onChange={(time) => this.saveEndTime(time, index)}
+          <Controller
+            control={control}
+            defaultValue={record.endTime}
+            name={`advancedroundrobin__Complex_Availability[${index}].endTime`}
+            render={({ onChange, value }) => (
+              <TimePicker
+                allowClear={false}
+                value={moment(value || "00:00:00", "HH:mm:ss")}
+                onChange={(time) => onChange(moment(time).format("HH:mm:ss"))}
+              />
+            )}
           />
         );
       },
     },
   ];
 
-  state = {
-    editingKey: "",
-    loading: true,
-  };
-
-  isEditing = (record) => record.key === this.state.editingKey;
-
-  cancel = () => {
-    this.setState({ editingKey: "" });
-  };
-
-  saveAvailable(e, index) {
-    const newData = [...this.props.value];
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      value: e.target.checked,
-    });
-    this.props.onChange(newData);
-  }
-
-  saveStartTime(time, index) {
-    const newData = [...this.props.value];
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      startTime: moment(time).format("HH:mm:ss"),
-    });
-    this.props.onChange(newData);
-  }
-
-  saveEndTime(time, index) {
-    const newData = [...this.props.value];
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      endTime: moment(time).format("HH:mm:ss"),
-    });
-    this.props.onChange(newData);
-  }
-
-  render() {
-    const availabilitycolumns = this.availabilitycolumns.map((col) => {
-      if (!col.editable) {
-        return col;
-      }
-      return {
-        ...col,
-        onCell: (record) => ({
-          record,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          editing: this.isEditing(record),
-        }),
-      };
-    });
-
-    return (
-      <Fragment>
-        <EditableContext.Provider value={this.props.form}>
-          <Table
-            rowKey="day"
-            bordered
-            dataSource={this.props.value}
-            columns={availabilitycolumns}
-            rowClassName="editable-row"
-            pagination={{
-              onChange: this.cancel,
-            }}
-          />
-        </EditableContext.Provider>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Table
+      rowKey="day"
+      bordered
+      dataSource={fields}
+      columns={availabilitycolumns}
+      rowClassName="editable-row"
+    />
+  );
+};

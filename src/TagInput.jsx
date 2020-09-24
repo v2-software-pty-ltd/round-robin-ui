@@ -34,7 +34,6 @@ export class TagInput extends React.Component {
     });
 
     this.props.onChange(tags);
-    this.props.handleOnChange(this.props.record);
   };
 
   saveInputRef = (input) => (this.input = input);
