@@ -8,16 +8,9 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export const EditSettingForm = (props) => {
-  useEffect(() => {
-    window.addEventListener("beforeunload", (event) => {
-      event.preventDefault();
-      event.returnValue = "";
-    });
-  }, []);
-
   const { data, activeUsers, onSubmit } = props;
 
-  const { control, handleSubmit, errors, watch } = useForm({
+  const { control, handleSubmit, errors, watch, formState } = useForm({
     defaultValues: {
       Owner:
         data["Owner"]?.id ??
@@ -34,6 +27,21 @@ export const EditSettingForm = (props) => {
         data["advancedroundrobin__Complex_Availability"],
     },
   });
+
+  const { isDirty } = formState;
+
+  useEffect(() => {
+    window.onbeforeunload = function(event) {
+      event.preventDefault();
+      if (isDirty) {
+        event.returnValue = "";
+      }
+    };
+
+    return () => {
+      window.removeEventListener("beforeunload");
+    };
+  }, [isDirty]);
 
   return (
     <div style={{ padding: "40px" }}>
