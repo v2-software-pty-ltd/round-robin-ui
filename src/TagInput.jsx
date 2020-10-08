@@ -1,14 +1,14 @@
-import { Tag, Input, Tooltip, Icon } from 'antd';
-import React from 'react';
+import { Tag, Input, Tooltip, Icon } from "antd";
+import React from "react";
 
 export class TagInput extends React.Component {
   state = {
     inputVisible: false,
-    inputValue: '',
+    inputValue: "",
   };
 
-  handleClose = removedTag => {
-    const tags = this.props.tags.filter(tag => tag !== removedTag);
+  handleClose = (removedTag) => {
+    const tags = this.props.tags.filter((tag) => tag !== removedTag);
 
     this.props.onChange(tags);
   };
@@ -17,7 +17,7 @@ export class TagInput extends React.Component {
     this.setState({ inputVisible: true }, () => this.input.focus());
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ inputValue: e.target.value });
   };
 
@@ -30,13 +30,13 @@ export class TagInput extends React.Component {
 
     this.setState({
       inputVisible: false,
-      inputValue: '',
+      inputValue: "",
     });
 
     this.props.onChange(tags);
   };
 
-  saveInputRef = input => (this.input = input);
+  saveInputRef = (input) => (this.input = input);
 
   render() {
     const { inputVisible, inputValue } = this.state;
@@ -47,7 +47,11 @@ export class TagInput extends React.Component {
         {tags.map((tag, index) => {
           const isLongTag = tag.length > 20;
           const tagElem = (
-            <Tag key={tag} closable={index !== 0} onClose={() => this.handleClose(tag)}>
+            <Tag
+              key={tag}
+              closable={index !== 0}
+              onClose={() => this.handleClose(tag)}
+            >
               {isLongTag ? `${tag.slice(0, 20)}...` : tag}
             </Tag>
           );
@@ -56,8 +60,8 @@ export class TagInput extends React.Component {
               {tagElem}
             </Tooltip>
           ) : (
-              tagElem
-            );
+            tagElem
+          );
         })}
         {inputVisible && (
           <Input
@@ -72,7 +76,10 @@ export class TagInput extends React.Component {
           />
         )}
         {!inputVisible && (
-          <Tag onClick={this.showInput} style={{ background: '#fff', borderStyle: 'dashed' }}>
+          <Tag
+            onClick={this.showInput}
+            style={{ background: "#fff", borderStyle: "dashed" }}
+          >
             <Icon type="plus" /> Add
           </Tag>
         )}
