@@ -1,8 +1,9 @@
 import React from "react";
 import moment from "moment";
-
 import { Table, Checkbox, TimePicker } from "antd";
 import { Controller, useFieldArray } from "react-hook-form";
+
+const format = "HH:mm";
 
 export const AvailabilityTable = ({ control }) => {
   const { fields } = useFieldArray({
@@ -49,8 +50,9 @@ export const AvailabilityTable = ({ control }) => {
             render={({ onChange, value }) => (
               <TimePicker
                 allowClear={false}
-                value={moment(value || "00:00:00", "HH:mm:ss")}
-                onChange={(time) => onChange(moment(time).format("HH:mm:ss"))}
+                value={moment(value || "00:00", "HH:mm")}
+                onChange={(time) => onChange(moment(time).format("HH:mm"))}
+                format={format}
               />
             )}
           />
@@ -70,8 +72,9 @@ export const AvailabilityTable = ({ control }) => {
             render={({ onChange, value }) => (
               <TimePicker
                 allowClear={false}
-                value={moment(value || "00:00:00", "HH:mm:ss")}
-                onChange={(time) => onChange(moment(time).format("HH:mm:ss"))}
+                value={moment(value || "00:00", "HH:mm")}
+                onChange={(time) => onChange(moment(time).format("HH:mm"))}
+                format={format}
               />
             )}
           />
