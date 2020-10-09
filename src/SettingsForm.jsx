@@ -11,24 +11,26 @@ import { tz } from "moment-timezone";
 export const EditSettingForm = (props) => {
   const { data, activeUsers, onSubmit } = props;
 
-  const { control, handleSubmit, errors, watch, formState } = useForm({
-    defaultValues: {
-      Owner:
-        data["Owner"]?.id ??
-        data["advancedroundrobin.Owner"]?.id ??
-        data["advancedroundrobin.advancedroundrobin.Owner"]?.id,
-      Module: data["advancedroundrobin__Module"],
-      Percentage: data["advancedroundrobin__Percent"],
-      email: data.Email,
-      Disabled_Until: data["advancedroundrobin__Disabled_Until"]
-        ? moment(data["advancedroundrobin__Disabled_Until"], "YYYY-MM-DD")
-        : null,
-      fieldCriteria: data["fieldCriteriaForUI"],
-      advancedroundrobin__Complex_Availability:
-        data["advancedroundrobin__Complex_Availability"],
-      advancedroundrobin__Timezone: data["advancedroundrobin__Timezone"],
-    },
-  });
+  const { control, handleSubmit, errors, watch, formState, setValue } = useForm(
+    {
+      defaultValues: {
+        Owner:
+          data["Owner"]?.id ??
+          data["advancedroundrobin.Owner"]?.id ??
+          data["advancedroundrobin.advancedroundrobin.Owner"]?.id,
+        Module: data["advancedroundrobin__Module"],
+        Percentage: data["advancedroundrobin__Percent"],
+        email: data.Email,
+        Disabled_Until: data["advancedroundrobin__Disabled_Until"]
+          ? moment(data["advancedroundrobin__Disabled_Until"], "YYYY-MM-DD")
+          : null,
+        fieldCriteria: data["fieldCriteriaForUI"],
+        advancedroundrobin__Complex_Availability:
+          data["advancedroundrobin__Complex_Availability"],
+        advancedroundrobin__Timezone: data["advancedroundrobin__Timezone"],
+      },
+    }
+  );
 
   const { isDirty } = formState;
 
@@ -129,7 +131,11 @@ export const EditSettingForm = (props) => {
           ></Controller>
         </Form.Item>
         <Form.Item label="Availability">
-          <AvailabilityTable control={control} />
+          <AvailabilityTable
+            control={control}
+            watch={watch}
+            setValue={setValue}
+          />
         </Form.Item>
         <Form.Item style={{ position: "fixed", top: "70px", right: "10px" }}>
           <Button type="primary" htmlType="submit">

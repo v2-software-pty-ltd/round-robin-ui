@@ -1,15 +1,37 @@
 import React from "react";
 import moment from "moment";
-import { Table, Checkbox, TimePicker } from "antd";
+import { Table, Checkbox, TimePicker, Button } from "antd";
 import { Controller, useFieldArray } from "react-hook-form";
 
 const format = "HH:mm";
 
-export const AvailabilityTable = ({ control }) => {
+export const AvailabilityTable = ({ control, watch, setValue }) => {
+  const startTime = watch(
+    "advancedroundrobin__Complex_Availability[0].startTime"
+  );
+  const endTime = watch("advancedroundrobin__Complex_Availability[0].endTime");
   const { fields } = useFieldArray({
     control,
     name: "advancedroundrobin__Complex_Availability",
   });
+
+  const copyStartDate = () => {
+    fields.forEach((field, index) => {
+      setValue(
+        `advancedroundrobin__Complex_Availability[${index}].startTime`,
+        startTime
+      );
+    });
+  };
+
+  const copyEndDate = () => {
+    fields.forEach((field, index) => {
+      setValue(
+        `advancedroundrobin__Complex_Availability[${index}].endTime`,
+        endTime
+      );
+    });
+  };
 
   const availabilitycolumns = [
     {
@@ -54,19 +76,33 @@ export const AvailabilityTable = ({ control }) => {
       editable: false,
       render: (text, record, index) => {
         return (
-          <Controller
-            control={control}
-            defaultValue={record.startTime}
-            name={`advancedroundrobin__Complex_Availability[${index}].startTime`}
-            render={({ onChange, value }) => (
-              <TimePicker
-                allowClear={false}
-                value={moment(value || "00:00", "HH:mm")}
-                onChange={(time) => onChange(moment(time).format("HH:mm"))}
-                format={format}
-              />
+          <>
+            <Controller
+              control={control}
+              defaultValue={record.startTime}
+              name={`advancedroundrobin__Complex_Availability[${index}].startTime`}
+              render={({ onChange, value }) => (
+                <TimePicker
+                  allowClear={false}
+                  value={moment(value || "00:00", "HH:mm")}
+                  onChange={(time) => onChange(moment(time).format("HH:mm"))}
+                  format={format}
+                />
+              )}
+            />
+            {index === 0 ? (
+              <Button
+                type="primary"
+                size="small"
+                onClick={copyStartDate}
+                style={{ marginTop: "8px" }}
+              >
+                Copy to other days
+              </Button>
+            ) : (
+              ""
             )}
-          />
+          </>
         );
       },
     },
@@ -76,19 +112,33 @@ export const AvailabilityTable = ({ control }) => {
       editable: false,
       render: (text, record, index) => {
         return (
-          <Controller
-            control={control}
-            defaultValue={record.endTime}
-            name={`advancedroundrobin__Complex_Availability[${index}].endTime`}
-            render={({ onChange, value }) => (
-              <TimePicker
-                allowClear={false}
-                value={moment(value || "00:00", "HH:mm")}
-                onChange={(time) => onChange(moment(time).format("HH:mm"))}
-                format={format}
-              />
+          <>
+            <Controller
+              control={control}
+              defaultValue={record.endTime}
+              name={`advancedroundrobin__Complex_Availability[${index}].endTime`}
+              render={({ onChange, value }) => (
+                <TimePicker
+                  allowClear={false}
+                  value={moment(value || "00:00", "HH:mm")}
+                  onChange={(time) => onChange(moment(time).format("HH:mm"))}
+                  format={format}
+                />
+              )}
+            />
+            {index === 0 ? (
+              <Button
+                type="primary"
+                size="small"
+                onClick={copyEndDate}
+                style={{ marginTop: "8px" }}
+              >
+                Copy to other days
+              </Button>
+            ) : (
+              ""
             )}
-          />
+          </>
         );
       },
     },
