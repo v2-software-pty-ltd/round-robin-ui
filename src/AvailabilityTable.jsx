@@ -90,6 +90,7 @@ export const AvailabilityTable = ({ control, watch, setValue }) => {
                 />
               )}
             />
+            <br />
             {index === 0 ? (
               <Button
                 type="primary"
@@ -126,6 +127,7 @@ export const AvailabilityTable = ({ control, watch, setValue }) => {
                 />
               )}
             />
+            <br />
             {index === 0 ? (
               <Button
                 type="primary"
