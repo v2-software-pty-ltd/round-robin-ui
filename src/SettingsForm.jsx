@@ -47,13 +47,18 @@ export const EditSettingForm = (props) => {
     };
   }, [isDirty]);
 
+  const handleSave = (data) => {
+    data["fieldCriteria"] = data["fieldCriteria"] || [];
+    onSubmit(data);
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <Form
         layout="vertical"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 16 }}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(handleSave)}
       >
         <Form.Item label="Owner">
           <Controller
