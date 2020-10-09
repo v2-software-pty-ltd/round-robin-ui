@@ -48,6 +48,8 @@ export async function loadRoundRobinSetting(recordID) {
     ...roundRobinSetting[0],
     round_robin_availability_id:
       availabilityRecordsForThisSetting[0]?.id || undefined,
+    advancedroundrobin__Timezone:
+      availabilityRecordsForThisSetting[0]?.advancedroundrobin__Timezone || "",
     advancedroundrobin__Complex_Availability:
       availabilityRecordsForThisSetting[0]
         ?.advancedroundrobin__Complex_Availability || [],
@@ -102,11 +104,13 @@ export async function updateRoundRobinSetting(newData) {
     const availability = roundRobinAvailability.filter(
       (item) => item.id === newData.round_robin_availability_id
     )?.[0];
-    if (availability) {
+    const timezone = newData.advancedroundrobin__Timezone;
+    if (availability || timezone) {
       await window.ZOHO.CRM.API.updateRecord({
         Entity: "advancedroundrobin__Round_Robin_Availability",
         APIData: {
           ...availability,
+          advancedroundrobin__Timezone: timezone,
           advancedroundrobin__Complex_Availability: JSON.stringify(
             newData.advancedroundrobin__Complex_Availability
           ),

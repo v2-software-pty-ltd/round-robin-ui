@@ -6,6 +6,7 @@ import { FieldCriteriaTable } from "./FieldCriteriaTable";
 import { AvailabilityTable } from "./AvailabilityTable";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { tz } from "moment-timezone";
 
 export const EditSettingForm = (props) => {
   const { data, activeUsers, onSubmit } = props;
@@ -25,6 +26,7 @@ export const EditSettingForm = (props) => {
       fieldCriteria: data["fieldCriteriaForUI"],
       advancedroundrobin__Complex_Availability:
         data["advancedroundrobin__Complex_Availability"],
+      advancedroundrobin__Timezone: data["advancedroundrobin__Timezone"],
     },
   });
 
@@ -105,6 +107,26 @@ export const EditSettingForm = (props) => {
             errors={errors}
             watch={watch}
           />
+        </Form.Item>
+        <Form.Item label="TimeZone">
+          <Controller
+            control={control}
+            name="advancedroundrobin__Timezone"
+            render={(props) => (
+              <Select
+                style={{ width: 200 }}
+                placeholder="Timezone"
+                showSearch
+                {...props}
+              >
+                {tz.names().map((field) => (
+                  <Select.Option key={field} value={field}>
+                    {field}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+          ></Controller>
         </Form.Item>
         <Form.Item label="Availability">
           <AvailabilityTable control={control} />

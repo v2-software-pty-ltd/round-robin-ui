@@ -128,6 +128,7 @@ export default class extends React.Component {
       Email: data.email,
       advancedroundrobin__Disabled_Until:
         data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
+      advancedroundrobin__Timezone: data.advancedroundrobin__Timezone,
     });
 
     this.setState({ loading: false });

@@ -14,8 +14,19 @@ export const AvailabilityTable = ({ control }) => {
   const availabilitycolumns = [
     {
       title: "Day of the Week",
+      key: "day",
       dataIndex: "day",
       editable: false,
+      render: (text, record, index) => {
+        return (
+          <Controller
+            control={control}
+            defaultValue={record.day}
+            name={`advancedroundrobin__Complex_Availability[${index}].day`}
+            render={({ onChange, value }) => <span>{value}</span>}
+          />
+        );
+      },
     },
     {
       title: "Available",
