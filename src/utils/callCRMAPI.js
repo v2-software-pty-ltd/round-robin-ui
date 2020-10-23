@@ -34,6 +34,7 @@ export async function loadRoundRobinSetting(recordID) {
 
   const roundRobinAvailability = await loadRoundRobinAvailability();
 
+  const availabilityEnabled = await checkAvailabilityEnabled();
   let availabilityRecordsForThisSetting = [];
 
   if (roundRobinAvailability) {
@@ -53,6 +54,7 @@ export async function loadRoundRobinSetting(recordID) {
     advancedroundrobin__Complex_Availability:
       availabilityRecordsForThisSetting[0]
         ?.advancedroundrobin__Complex_Availability || [],
+    availabilityEnabled: availabilityEnabled,
   };
 }
 
@@ -104,13 +106,12 @@ export async function updateRoundRobinSetting(newData) {
     const availability = roundRobinAvailability.filter(
       (item) => item.id === newData.round_robin_availability_id
     )?.[0];
-    const timezone = newData.advancedroundrobin__Timezone;
-    if (availability || timezone) {
+    if (availability) {
       await window.ZOHO.CRM.API.updateRecord({
         Entity: "advancedroundrobin__Round_Robin_Availability",
         APIData: {
           ...availability,
-          advancedroundrobin__Timezone: timezone,
+          advancedroundrobin__Timezone: newData.advancedroundrobin__Timezone,
           advancedroundrobin__Complex_Availability: JSON.stringify(
             newData.advancedroundrobin__Complex_Availability
           ),
@@ -118,6 +119,19 @@ export async function updateRoundRobinSetting(newData) {
         Trigger: ["workflow"],
       });
     }
+  } else {
+    const data = {
+      advancedroundrobin__Timezone: newData.advancedroundrobin__Timezone,
+      advancedroundrobin__Complex_Availability: JSON.stringify(
+        newData.advancedroundrobin__Complex_Availability
+      ),
+      advancedroundrobin__Round_Robin_Setting: {
+        id: newData.id,
+      },
+      Owner: newData.Owner,
+      Created_By: newData.Created_By,
+    };
+    await addNewRoundRobinAvailability(data);
   }
 
   return result;
@@ -138,20 +152,46 @@ export async function addNewSetting() {
   return result.data[0];
 }
 
-let roundRobinAvailabilityCache = [];
-
 export async function loadRoundRobinAvailability() {
-  if (!roundRobinAvailabilityCache.length) {
-    await window.ZOHO.embeddedApp.init();
-    const roundRobinAvailabilityResponse = await window.ZOHO.CRM.API.getAllRecords(
-      {
-        Entity: "advancedroundrobin__Round_Robin_Availability",
-      }
-    );
+  await window.ZOHO.embeddedApp.init();
+  const roundRobinAvailabilityResponse = await window.ZOHO.CRM.API.getAllRecords(
+    {
+      Entity: "advancedroundrobin__Round_Robin_Availability",
+    }
+  );
 
-    const { data } = roundRobinAvailabilityResponse;
-    roundRobinAvailabilityCache = data;
-    return data;
-  }
-  return roundRobinAvailabilityCache;
+  const { data } = roundRobinAvailabilityResponse;
+  return data;
+}
+
+export async function enableRoundRobinAvailability() {
+  const result = await window.ZOHO.CRM.FUNCTIONS.execute(
+    "advancedroundrobin__enable_availability_module",
+    {}
+  );
+  return result?.code;
+}
+
+export async function addNewRoundRobinAvailability(data) {
+  await window.ZOHO.embeddedApp.init();
+
+  const result = await window.ZOHO.CRM.API.insertRecord({
+    Entity: "advancedroundrobin__Round_Robin_Availability",
+    APIData: {
+      Name: "New Setting",
+      ...data,
+    },
+    Trigger: ["workflow"],
+  });
+
+  return result.data[0];
+}
+
+export async function checkAvailabilityEnabled() {
+  await window.ZOHO.embeddedApp.init();
+  const result = await window.ZOHO.CRM.API.getOrgVariable(
+    "advancedroundrobin__availability_enabled"
+  ).then((data) => JSON.parse(data?.Success?.Content || ""));
+
+  return result;
 }

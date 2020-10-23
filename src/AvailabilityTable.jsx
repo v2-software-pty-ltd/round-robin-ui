@@ -92,7 +92,7 @@ export const AvailabilityTable = ({
         return (
           <Controller
             control={control}
-            defaultValue={record.value}
+            defaultValue={record.available}
             name={`advancedroundrobin__Complex_Availability[${index}].available`}
             render={({ onChange, value }) => (
               <Checkbox

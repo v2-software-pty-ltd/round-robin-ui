@@ -1,15 +1,17 @@
 import { Button, DatePicker, Form, Input, InputNumber, Select } from "antd";
 import moment from "moment";
-import React from "react";
-
-import { FieldCriteriaTable } from "./FieldCriteriaTable";
-import { AvailabilityTable } from "./AvailabilityTable";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { tz } from "moment-timezone";
 
+import { enableRoundRobinAvailability } from "./utils/callCRMAPI";
+import { AvailabilityTable } from "./AvailabilityTable";
+import { FieldCriteriaTable } from "./FieldCriteriaTable";
+
 export const EditSettingForm = (props) => {
   const { data, activeUsers, onSubmit } = props;
+
+  const [availabilityEnabled, setAvailabilityEnabled] = useState(false);
 
   const {
     control,
@@ -42,6 +44,10 @@ export const EditSettingForm = (props) => {
   const { isDirty } = formState;
 
   useEffect(() => {
+    setAvailabilityEnabled(data.availabilityEnabled);
+  }, [data.availabilityEnabled]);
+
+  useEffect(() => {
     window.onbeforeunload = function(event) {
       event.preventDefault();
       if (isDirty) {
@@ -57,6 +63,13 @@ export const EditSettingForm = (props) => {
   const handleSave = (data) => {
     data["fieldCriteria"] = data["fieldCriteria"] || [];
     onSubmit(data);
+  };
+
+  const handleSpecifyClick = async () => {
+    const result = await enableRoundRobinAvailability();
+    if (result === "success") {
+      setAvailabilityEnabled(true);
+    }
   };
 
   return (
@@ -122,35 +135,45 @@ export const EditSettingForm = (props) => {
             watch={watch}
           />
         </Form.Item>
-        <Form.Item label="TimeZone">
-          <Controller
-            control={control}
-            name="advancedroundrobin__Timezone"
-            render={(props) => (
-              <Select
-                style={{ width: 200 }}
-                placeholder="Timezone"
-                showSearch
-                {...props}
-              >
-                {tz.names().map((field) => (
-                  <Select.Option key={field} value={field}>
-                    {field}
-                  </Select.Option>
-                ))}
-              </Select>
-            )}
-          ></Controller>
-        </Form.Item>
-        <Form.Item label="Availability">
-          <AvailabilityTable
-            control={control}
-            setValue={setValue}
-            getValues={getValues}
-            errors={errors}
-            trigger={trigger}
-          />
-        </Form.Item>
+        {availabilityEnabled ? (
+          <>
+            <Form.Item label="TimeZone">
+              <Controller
+                control={control}
+                name="advancedroundrobin__Timezone"
+                render={(props) => (
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="Timezone"
+                    showSearch
+                    {...props}
+                  >
+                    {tz.names().map((field) => (
+                      <Select.Option key={field} value={field}>
+                        {field}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                )}
+              ></Controller>
+            </Form.Item>
+            <Form.Item label="Availability">
+              <AvailabilityTable
+                control={control}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+                trigger={trigger}
+              />
+            </Form.Item>
+          </>
+        ) : (
+          <Form.Item label="Do you have salespeople who only work part time?">
+            <Button type="primary" onClick={handleSpecifyClick}>
+              Specify salesperson availability
+            </Button>
+          </Form.Item>
+        )}
         <Form.Item style={{ position: "fixed", top: "70px", right: "10px" }}>
           <Button type="primary" htmlType="submit">
             Save
