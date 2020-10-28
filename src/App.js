@@ -10,7 +10,7 @@ function App() {
     page: "list_settings",
   });
 
-  function getPage() {
+  const page = () => {
     if (currentPage.page === "list_settings") {
       return <SettingsPage setPage={setPage} message={currentPage.message} />;
     } else if (currentPage.page === "edit_setting") {
@@ -18,11 +18,11 @@ function App() {
         <EditSettingsPage setPage={setPage} recordID={currentPage.recordID} />
       );
     }
-  }
+  };
 
   return (
     <ErrorBoundary>
-      <div className="App">{getPage()}</div>
+      <div className="App">{page()}</div>
     </ErrorBoundary>
   );
 }
