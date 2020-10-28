@@ -12,20 +12,17 @@ import {
   processFieldCriteria,
   generateFieldCriteriaJSON,
 } from "./utils/processFieldCriteria";
+import { useState, useEffect } from "react";
+import useAsyncError from "./hooks/useAsyncError";
 
-export default class extends React.Component {
-  state = {
-    roundRobinSetting: null,
-    loading: true,
-    error: null,
-    activeUsers: [],
-  };
+export default function EditSettingPage({ setPage, recordID }) {
+  const [loading, setLoading] = useState(true);
+  const [roundRobinSetting, setRoundRobinSetting] = useState(null);
+  const [activeUsers, setActiveUsers] = useState([]);
 
-  componentDidMount() {
-    this.fetchRoundRobinSetting();
-  }
+  const throwError = useAsyncError();
 
-  getAvailabilityData() {
+  const getAvailabilityData = () => {
     const days = [
       "Monday",
       "Tuesday",
@@ -37,32 +34,29 @@ export default class extends React.Component {
     ];
 
     return days.map((day) => {
-      return { day: day, value: false, startTime: "", endTime: "" };
+      return { day: day, available: false, startTime: "", endTime: "" };
     });
-  }
+  };
 
-  fetchRoundRobinSetting = async () => {
-    try {
-      const roundRobinSetting = await loadRoundRobinSetting(
-        this.props.recordID
-      );
-      const activeUsers = await loadActiveUsers();
+  useEffect(() => {
+    const fetchRoundRobinSetting = async () => {
+      try {
+        const roundRobinSetting = await loadRoundRobinSetting(recordID);
+        const activeUsers = await loadActiveUsers();
 
-      const rawFieldCriteria =
-        roundRobinSetting["advancedroundrobin__Field_Criteria"];
+        const rawFieldCriteria =
+          roundRobinSetting["advancedroundrobin__Field_Criteria"];
 
-      const fieldCriteriaForUI = processFieldCriteria(rawFieldCriteria).map(
-        (row) => {
-          return {
-            ...row,
-            key: `${row.fieldName}${row.comparisonType}`,
-          };
-        }
-      );
-
-      this.setState({
-        loading: false,
-        roundRobinSetting: {
+        const fieldCriteriaForUI = processFieldCriteria(rawFieldCriteria).map(
+          (row) => {
+            return {
+              ...row,
+              key: `${row.fieldName}${row.comparisonType}`,
+            };
+          }
+        );
+        setLoading(false);
+        setRoundRobinSetting({
           ...roundRobinSetting,
           fieldCriteriaForUI,
           advancedroundrobin__Complex_Availability: roundRobinSetting
@@ -70,16 +64,17 @@ export default class extends React.Component {
             ? JSON.parse(
                 roundRobinSetting.advancedroundrobin__Complex_Availability
               )
-            : this.getAvailabilityData(),
-        },
-        activeUsers,
-      });
-    } catch (e) {
-      this.error = e;
-    }
-  };
+            : getAvailabilityData(),
+        });
+        setActiveUsers(activeUsers);
+      } catch (e) {
+        throwError(e);
+      }
+    };
+    fetchRoundRobinSetting();
+  }, [recordID, throwError]);
 
-  header() {
+  const header = () => {
     return (
       <Layout>
         <Layout.Header
@@ -110,54 +105,57 @@ export default class extends React.Component {
         </Layout.Header>
       </Layout>
     );
-  }
-
-  handleSubmit = async (data) => {
-    this.setState({ loading: true });
-    const fieldCriteriaJSON = generateFieldCriteriaJSON(data.fieldCriteria);
-
-    await updateRoundRobinSetting({
-      ...this.state.roundRobinSetting,
-      advancedroundrobin__Field_Criteria: fieldCriteriaJSON,
-      advancedroundrobin__Complex_Availability:
-        data.advancedroundrobin__Complex_Availability,
-      advancedroundrobin__Module: data.Module,
-      Owner: { id: data.Owner },
-      advancedroundrobin__Percent:
-        data.Percentage > 100 ? 100 : data.Percentage,
-      Email: data.email,
-      advancedroundrobin__Disabled_Until:
-        data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
-    });
-
-    this.setState({ loading: false });
-
-    this.props.setPage({
-      page: "list_settings",
-      message: "Setting updated",
-    });
   };
 
-  content() {
-    if (!this.state.loading && this.state.roundRobinSetting) {
+  const handleSubmit = async (data) => {
+    try {
+      setLoading(true);
+      const fieldCriteriaJSON = generateFieldCriteriaJSON(data.fieldCriteria);
+
+      await updateRoundRobinSetting({
+        ...roundRobinSetting,
+        advancedroundrobin__Field_Criteria: fieldCriteriaJSON,
+        advancedroundrobin__Complex_Availability:
+          data.advancedroundrobin__Complex_Availability,
+        advancedroundrobin__Module: data.Module,
+        Owner: { id: data.Owner },
+        advancedroundrobin__Percent:
+          data.Percentage > 100 ? 100 : data.Percentage,
+        Email: data.email,
+        advancedroundrobin__Disabled_Until:
+          data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
+        advancedroundrobin__Timezone: data.advancedroundrobin__Timezone,
+      });
+
+      setLoading(false);
+
+      setPage({
+        page: "list_settings",
+        message: "Setting updated",
+      });
+    } catch (e) {
+      throwError(e);
+    }
+  };
+
+  const content = () => {
+    if (!loading && roundRobinSetting) {
       return (
         <EditSettingForm
-          activeUsers={this.state.activeUsers}
-          data={this.state.roundRobinSetting}
-          onSubmit={this.handleSubmit}
+          activeUsers={activeUsers}
+          data={roundRobinSetting}
+          onSubmit={handleSubmit}
         />
       );
     }
 
     return <Spin tip="Loading..." />;
-  }
+  };
 
-  render() {
-    return (
-      <Layout>
-        <Layout.Header>{this.header()}</Layout.Header>
-        <Layout.Content>{this.content()}</Layout.Content>
-      </Layout>
-    );
-  }
+  return (
+    <Layout>
+      <Layout.Header>{header()}</Layout.Header>
+      <Layout.Content>{content()}</Layout.Content>
+    </Layout>
+  );
 }
