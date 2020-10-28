@@ -1,5 +1,6 @@
 import React from 'react';
-import { Alert, Button, Icon, Input, Layout, Table } from 'antd';
+import { Alert, Button, Input, Layout, Table } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 
 export class SettingsList extends React.Component {
@@ -49,7 +50,7 @@ export class SettingsList extends React.Component {
       ),
 
     filterIcon: filtered => (
-      <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
 
     onFilter: (value, record) => {

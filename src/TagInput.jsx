@@ -1,4 +1,5 @@
-import { Tag, Input, Tooltip, Icon } from "antd";
+import { Tag, Input, Tooltip } from "antd";
+import { PlusOutlined } from '@ant-design/icons';
 import React from "react";
 
 export class TagInput extends React.Component {
@@ -80,7 +81,7 @@ export class TagInput extends React.Component {
             onClick={this.showInput}
             style={{ background: "#fff", borderStyle: "dashed" }}
           >
-            <Icon type="plus" /> Add
+            <PlusOutlined /> Add
           </Tag>
         )}
       </div>

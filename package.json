@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
     "@sentry/browser": "^5.23.0",
     "@sentry/tracing": "^5.23.0",
     "antd": "^4.7.3",
