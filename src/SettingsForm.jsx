@@ -75,12 +75,11 @@ export const EditSettingForm = (props) => {
   return (
     <div style={{ padding: "40px" }}>
       <Form
-        layout="vertical"
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 16 }}
-        onSubmit={handleSubmit(handleSave)}
+        onFinish={handleSubmit(handleSave)}
       >
-        <Form.Item label="Owner">
+        <Form.Item label="Owner" labelAlign="left">
           <Controller
             name="Owner"
             control={control}
@@ -95,7 +94,7 @@ export const EditSettingForm = (props) => {
             )}
           ></Controller>
         </Form.Item>
-        <Form.Item label="Module">
+        <Form.Item label="Module" labelAlign="left">
           <Controller
             control={control}
             name="Module"
@@ -110,24 +109,27 @@ export const EditSettingForm = (props) => {
             )}
           ></Controller>
         </Form.Item>
-        <Form.Item label="Percentage">
+        <Form.Item label="Percentage" labelAlign="left">
           <Controller
             as={InputNumber}
             control={control}
             name="Percentage"
           ></Controller>
         </Form.Item>
-        <Form.Item label="Email For Notifications">
+        <Form.Item label="Email For Notifications" labelAlign="left">
           <Controller as={Input} control={control} name="email"></Controller>
         </Form.Item>
-        <Form.Item label="Disabled Until (useful for holidays)">
+        <Form.Item
+          label="Disabled Until (useful for holidays)"
+          labelAlign="left"
+        >
           <Controller
             control={control}
             name="Disabled_Until"
             render={(props) => <DatePicker format={"MMM-DD-YYYY"} {...props} />}
           ></Controller>
         </Form.Item>
-        <Form.Item label="Field Criteria">
+        <Form.Item label="Field Criteria" labelAlign="left">
           <FieldCriteriaTable
             control={control}
             fieldsForThisModule={data["fieldsForThisModule"]}
@@ -137,7 +139,7 @@ export const EditSettingForm = (props) => {
         </Form.Item>
         {availabilityEnabled ? (
           <>
-            <Form.Item label="TimeZone">
+            <Form.Item label="TimeZone" labelAlign="left">
               <Controller
                 control={control}
                 name="advancedroundrobin__Timezone"
@@ -157,7 +159,7 @@ export const EditSettingForm = (props) => {
                 )}
               ></Controller>
             </Form.Item>
-            <Form.Item label="Availability">
+            <Form.Item label="Availability" labelAlign="left">
               <AvailabilityTable
                 control={control}
                 setValue={setValue}
@@ -168,7 +170,10 @@ export const EditSettingForm = (props) => {
             </Form.Item>
           </>
         ) : (
-          <Form.Item label="Do you have salespeople who only work part time?">
+          <Form.Item
+            label="Do you have salespeople who only work part time?"
+            labelAlign="left"
+          >
             <Button type="primary" onClick={handleSpecifyClick}>
               Specify salesperson availability
             </Button>
