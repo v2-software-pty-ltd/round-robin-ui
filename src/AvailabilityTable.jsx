@@ -53,8 +53,8 @@ export const AvailabilityTable = ({
     let end = getValues(
       `advancedroundrobin__Complex_Availability[${index}].endTime`
     );
-    end = moment(end || "00:00", "HH:mm");
-    const start = moment(value || "00:00", "HH:mm");
+    end = moment(end || "23:59", "HH:mm");
+    const start = moment(value || "00:01", "HH:mm");
     return start.isSameOrBefore(end);
   };
 
@@ -62,8 +62,8 @@ export const AvailabilityTable = ({
     let start = getValues(
       `advancedroundrobin__Complex_Availability[${index}].startTime`
     );
-    start = moment(start || "00:00", "HH:mm");
-    const end = moment(value || "00:00", "HH:mm");
+    start = moment(start || "00:01", "HH:mm");
+    const end = moment(value || "23:59", "HH:mm");
     return end.isSameOrAfter(start);
   };
 
@@ -121,7 +121,7 @@ export const AvailabilityTable = ({
               render={({ onChange, value }) => (
                 <TimePicker
                   allowClear={false}
-                  value={moment(value || "00:00", "HH:mm")}
+                  value={moment(value || "00:01", "HH:mm")}
                   onChange={(time) => {
                     if (
                       errors?.advancedroundrobin__Complex_Availability?.[index]
@@ -176,7 +176,7 @@ export const AvailabilityTable = ({
               render={({ onChange, value }) => (
                 <TimePicker
                   allowClear={false}
-                  value={moment(value || "00:00", "HH:mm")}
+                  value={moment(value || "23:59", "HH:mm")}
                   onChange={(time) => {
                     if (
                       errors?.advancedroundrobin__Complex_Availability?.[index]

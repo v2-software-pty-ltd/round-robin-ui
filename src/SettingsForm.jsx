@@ -139,7 +139,7 @@ export const EditSettingForm = (props) => {
         </Form.Item>
         {availabilityEnabled ? (
           <>
-            <Form.Item label="TimeZone" labelAlign="left">
+            <Form.Item label="Time Zone" labelAlign="left">
               <Controller
                 control={control}
                 name="advancedroundrobin__Timezone"
