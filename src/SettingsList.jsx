@@ -128,26 +128,26 @@ export class SettingsList extends React.Component {
     }
     const columns = [
       {
-        title: 'Owner',
+        title: "Owner",
         dataIndex: "ownerName",
         key: "ownerName",
-        ...this.getColumnSearchProps("ownerName", "Owner")
+        ...this.getColumnSearchProps("ownerName", "Owner"),
       },
       {
         title: "Percentage",
         dataIndex: "advancedroundrobin__Percent",
-        key: "advancedroundrobin__Percent"
+        key: "advancedroundrobin__Percent",
       },
       {
         title: "Module",
         dataIndex: "advancedroundrobin__Module",
         key: "advancedroundrobin__Module",
-        ...this.getColumnSearchProps("advancedroundrobin__Module", "Module")
+        ...this.getColumnSearchProps("advancedroundrobin__Module", "Module"),
       },
       {
         title: "Disabled Until",
         dataIndex: "advancedroundrobin__Disabled_Until",
-        key: "advancedroundrobin__Disabled_Until"
+        key: "advancedroundrobin__Disabled_Until",
       },
       {
         title: "Field Criteria",
@@ -156,20 +156,23 @@ export class SettingsList extends React.Component {
         ...this.getColumnSearchProps(
           "advancedroundrobin__Field_Criteria",
           "Field Criteria"
-        )
+        ),
+      },
+      {
+        title: "Setting Name",
+        dataIndex: "Name",
+        key: "Name",
       },
       {
         title: "Edit",
-        render: currentRow => {
+        render: (currentRow) => {
           return (
-            <Button
-              onClick={() => this.props.handleEditRecord(currentRow.id)}
-            >
+            <Button onClick={() => this.props.handleEditRecord(currentRow.id)}>
               Edit
             </Button>
           );
-        }
-      }
+        },
+      },
     ];
 
     return (<Table

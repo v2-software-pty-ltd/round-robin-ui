@@ -119,6 +119,7 @@ export default function EditSettingPage({ setPage, recordID }) {
           data.advancedroundrobin__Complex_Availability,
         advancedroundrobin__Module: data.Module,
         Owner: { id: data.Owner },
+        Name: data.Name,
         advancedroundrobin__Percent:
           data.Percentage > 100 ? 100 : data.Percentage,
         Email: data.email,
