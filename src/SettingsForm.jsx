@@ -30,7 +30,8 @@ export const EditSettingForm = (props) => {
         data["advancedroundrobin.advancedroundrobin.Owner"]?.id,
       Module: data["advancedroundrobin__Module"],
       Percentage: data["advancedroundrobin__Percent"],
-      email: data.Email,
+      Name: data["Name"],
+      email: data["Email"],
       Disabled_Until: data["advancedroundrobin__Disabled_Until"]
         ? moment(data["advancedroundrobin__Disabled_Until"], "YYYY-MM-DD")
         : null,
@@ -79,6 +80,9 @@ export const EditSettingForm = (props) => {
         wrapperCol={{ span: 16 }}
         onFinish={handleSubmit(handleSave)}
       >
+        <Form.Item label="Setting Name" labelAlign="left">
+          <Controller as={Input} control={control} name="Name"></Controller>
+        </Form.Item>
         <Form.Item label="Owner" labelAlign="left">
           <Controller
             name="Owner"
