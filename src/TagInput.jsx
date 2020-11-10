@@ -1,5 +1,5 @@
 import { Tag, Input, Tooltip } from "antd";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from "@ant-design/icons";
 import React from "react";
 
 export class TagInput extends React.Component {
@@ -9,7 +9,7 @@ export class TagInput extends React.Component {
   };
 
   handleClose = (removedTag) => {
-    const tags = this.props.tags.filter((tag) => tag !== removedTag);
+    const tags = this.props.value.filter((tag) => tag !== removedTag);
 
     this.props.onChange(tags);
   };
