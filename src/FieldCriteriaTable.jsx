@@ -4,7 +4,7 @@ import { TagInput } from "./TagInput";
 
 import { Button, Select, Table } from "antd";
 import { Controller, useFieldArray } from "react-hook-form";
-import { loadFields } from "./utils/callCRMAPI";
+import { loadActiveUsers, loadFields } from "./utils/callCRMAPI";
 
 const comparisonTypes = [
   {
@@ -57,10 +57,11 @@ const comparisonTypes = [
   },
 ];
 
-export const FieldCriteriaTable = ({ control, errors, watch }) => {
+export const FieldCriteriaTable = ({ control, errors, watch, getValues }) => {
   const watchModule = watch("Module");
 
   const [fieldsForThisModule, setfieldsForThisModule] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
 
   const { fields, append, remove } = useFieldArray({
     control: control,
@@ -82,6 +83,22 @@ export const FieldCriteriaTable = ({ control, errors, watch }) => {
       isCancelled = true;
     };
   }, [watchModule]);
+
+  useEffect(() => {
+    let isCancelled = false;
+    async function loadUsers() {
+      const users = await loadActiveUsers();
+      if (!isCancelled) {
+        setActiveUsers(users);
+      }
+    }
+
+    loadUsers();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const ErrorMessage = ({ msg }) => {
     return <div style={{ color: "red" }}>{msg}</div>;
@@ -170,6 +187,7 @@ export const FieldCriteriaTable = ({ control, errors, watch }) => {
       editable: true,
       desiredInputType: "tags",
       render: (tags, record, index) => {
+        const watchFieldName = watch(`fieldCriteria[${index}].fieldName`);
         return (
           <>
             <Controller
@@ -180,7 +198,25 @@ export const FieldCriteriaTable = ({ control, errors, watch }) => {
                 validate: (value) => value.length > 0,
               }}
               control={control}
-              render={(props) => <TagInput {...props} />}
+              render={(props) => {
+                if (watchFieldName === "Owner") {
+                  return (
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      placeholder=""
+                      {...props}
+                    >
+                      {activeUsers.map((user) => (
+                        <Select.Option key={user.id} value={user.full_name}>
+                          {user.full_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  );
+                }
+                return <TagInput {...props} />;
+              }}
             />
             {errors.fieldCriteria?.[index]?.possibleValues && (
               <ErrorMessage msg="Please Input Possible Values" />
