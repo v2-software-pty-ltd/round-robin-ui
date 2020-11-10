@@ -27,6 +27,10 @@ export const AvailabilityTable = ({
         `advancedroundrobin__Complex_Availability[${index}].startTime`,
         getValues(`advancedroundrobin__Complex_Availability[0].startTime`)
       );
+      setValue(
+        `advancedroundrobin__Complex_Availability[${index}].available`,
+        true
+      );
       trigger(`advancedroundrobin__Complex_Availability[${index}].startTime`);
       if (errors?.advancedroundrobin__Complex_Availability?.[index]?.endTime) {
         trigger(`advancedroundrobin__Complex_Availability[${index}].endTime`);
@@ -39,6 +43,10 @@ export const AvailabilityTable = ({
       setValue(
         `advancedroundrobin__Complex_Availability[${index}].endTime`,
         getValues(`advancedroundrobin__Complex_Availability[0].endTime`)
+      );
+      setValue(
+        `advancedroundrobin__Complex_Availability[${index}].available`,
+        true
       );
       trigger(`advancedroundrobin__Complex_Availability[${index}].endTime`);
       if (
@@ -132,6 +140,10 @@ export const AvailabilityTable = ({
                       );
                     }
                     onChange(moment(time).format("HH:mm"));
+                    setValue(
+                      `advancedroundrobin__Complex_Availability[${index}].available`,
+                      true
+                    );
                   }}
                   format={format}
                 />
@@ -186,6 +198,10 @@ export const AvailabilityTable = ({
                         `advancedroundrobin__Complex_Availability[${index}].startTime`
                       );
                     }
+                    setValue(
+                      `advancedroundrobin__Complex_Availability[${index}].available`,
+                      true
+                    );
                     onChange(moment(time).format("HH:mm"));
                   }}
                   format={format}
