@@ -208,7 +208,7 @@ export const FieldCriteriaTable = ({ control, errors, watch, getValues }) => {
                       {...props}
                     >
                       {activeUsers.map((user) => (
-                        <Select.Option key={user.id} value={user.full_name}>
+                        <Select.Option key={user.id} value={user.id}>
                           {user.full_name}
                         </Select.Option>
                       ))}
