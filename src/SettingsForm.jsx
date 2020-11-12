@@ -38,7 +38,9 @@ export const EditSettingForm = (props) => {
       fieldCriteria: data["fieldCriteriaForUI"],
       advancedroundrobin__Complex_Availability:
         data["advancedroundrobin__Complex_Availability"],
-      advancedroundrobin__Timezone: data["advancedroundrobin__Timezone"],
+      advancedroundrobin__Timezone:
+        data["advancedroundrobin__Timezone"] ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
   });
 
