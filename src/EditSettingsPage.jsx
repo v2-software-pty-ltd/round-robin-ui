@@ -11,6 +11,7 @@ import {
 import {
   processFieldCriteria,
   generateFieldCriteriaJSON,
+  processLeaveDates,
 } from "./utils/processFieldCriteria";
 import { useState, useEffect } from "react";
 import useAsyncError from "./hooks/useAsyncError";
@@ -47,6 +48,11 @@ export default function EditSettingPage({ setPage, recordID }) {
         const rawFieldCriteria =
           roundRobinSetting["advancedroundrobin__Field_Criteria"];
 
+        const rawLeaveDates =
+          roundRobinSetting["advancedroundrobin__Leave_Dates"];
+
+        const leaveDates = processLeaveDates(rawLeaveDates);
+
         const fieldCriteriaForUI = processFieldCriteria(rawFieldCriteria).map(
           (row) => {
             return {
@@ -65,6 +71,7 @@ export default function EditSettingPage({ setPage, recordID }) {
                 roundRobinSetting.advancedroundrobin__Complex_Availability
               )
             : getAvailabilityData(),
+          advancedroundrobin__Leave_Dates: leaveDates,
         });
         setActiveUsers(activeUsers);
       } catch (e) {
@@ -126,6 +133,7 @@ export default function EditSettingPage({ setPage, recordID }) {
         advancedroundrobin__Disabled_Until:
           data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
         advancedroundrobin__Timezone: data.advancedroundrobin__Timezone,
+        advancedroundrobin__Leave_Dates: data.advancedroundrobin__Leave_Dates,
       });
 
       setLoading(false);

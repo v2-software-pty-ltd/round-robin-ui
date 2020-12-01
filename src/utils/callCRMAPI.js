@@ -55,6 +55,9 @@ export async function loadRoundRobinSetting(recordID) {
       availabilityRecordsForThisSetting[0]
         ?.advancedroundrobin__Complex_Availability || [],
     availabilityEnabled: availabilityEnabled,
+    advancedroundrobin__Leave_Dates:
+      availabilityRecordsForThisSetting[0]?.advancedroundrobin__Leave_Dates ||
+      [],
   };
 }
 
@@ -115,6 +118,9 @@ export async function updateRoundRobinSetting(newData) {
           advancedroundrobin__Timezone: newData.advancedroundrobin__Timezone,
           advancedroundrobin__Complex_Availability: JSON.stringify(
             newData.advancedroundrobin__Complex_Availability
+          ),
+          advancedroundrobin__Leave_Dates: JSON.stringify(
+            newData.advancedroundrobin__Leave_Dates
           ),
         },
         Trigger: ["workflow"],
