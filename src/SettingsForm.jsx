@@ -1,4 +1,13 @@
-import { Button, DatePicker, Form, Input, InputNumber, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Divider,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -7,9 +16,20 @@ import { tz } from "moment-timezone";
 import { enableRoundRobinAvailability } from "./utils/callCRMAPI";
 import { AvailabilityTable } from "./AvailabilityTable";
 import { FieldCriteriaTable } from "./FieldCriteriaTable";
+import { LeaveTable } from "./LeaveTable";
+
+const { Option } = Select;
+
+const labelWrapStyle = {
+  whiteSpace: "normal",
+  lineHeight: 1.2,
+};
 
 export const EditSettingForm = (props) => {
   const { data, activeUsers, onSubmit } = props;
+
+  const [modules, setModules] = useState(["Leads", "Contacts", "Deals"]);
+  const [name, setName] = useState("");
 
   const [availabilityEnabled, setAvailabilityEnabled] = useState(false);
 
@@ -41,6 +61,9 @@ export const EditSettingForm = (props) => {
       advancedroundrobin__Timezone:
         data["advancedroundrobin__Timezone"] ||
         Intl.DateTimeFormat().resolvedOptions().timeZone,
+      advancedroundrobin__Leave_Dates: data["advancedroundrobin__Leave_Dates"],
+      advancedroundrobin__Max_Leads_For_This_Setting:
+        data["advancedroundrobin__Max_Leads_For_This_Setting"],
     },
   });
 
@@ -49,6 +72,17 @@ export const EditSettingForm = (props) => {
   useEffect(() => {
     setAvailabilityEnabled(data.availabilityEnabled);
   }, [data.availabilityEnabled]);
+
+  useEffect(() => {
+    const module = data["advancedroundrobin__Module"];
+    setModules((prevState) => {
+      if (!prevState.includes(module)) {
+        return [...prevState, module];
+      } else {
+        return prevState;
+      }
+    });
+  }, [data]);
 
   useEffect(() => {
     window.onbeforeunload = function(event) {
@@ -64,8 +98,18 @@ export const EditSettingForm = (props) => {
   }, [isDirty]);
 
   const handleSave = (data) => {
-    data["fieldCriteria"] = data["fieldCriteria"] || [];
-    onSubmit(data);
+    const newData = JSON.parse(JSON.stringify(data));
+    const leaveDates = data["advancedroundrobin__Leave_Dates"];
+    if (leaveDates) {
+      leaveDates.forEach((dates, index) => {
+        newData["advancedroundrobin__Leave_Dates"][index] = {
+          startTime: dates.dates[0].toISOString(),
+          endTime: dates.dates[1].toISOString(),
+        };
+      });
+    }
+    newData["fieldCriteria"] = newData["fieldCriteria"] || [];
+    onSubmit(newData);
   };
 
   const handleSpecifyClick = async () => {
@@ -75,10 +119,21 @@ export const EditSettingForm = (props) => {
     }
   };
 
+  const addItem = () => {
+    if (name.length) {
+      setModules((prevState) => [...prevState, name]);
+      setName("");
+    }
+  };
+
+  const onNameChange = (event) => {
+    setName(event.target.value);
+  };
+
   return (
     <div style={{ padding: "40px" }}>
       <Form
-        labelCol={{ span: 3 }}
+        labelCol={{ span: 4 }}
         wrapperCol={{ span: 16 }}
         onFinish={handleSubmit(handleSave)}
       >
@@ -105,14 +160,58 @@ export const EditSettingForm = (props) => {
             control={control}
             name="Module"
             render={(props) => (
-              <Select style={{ width: 200 }} placeholder="Module" {...props}>
-                {["Leads", "Contacts", "Deals"].map((moduleName) => (
-                  <Select.Option key={moduleName} value={moduleName}>
-                    {moduleName}
-                  </Select.Option>
+              <Select
+                style={{ width: 200 }}
+                placeholder="Module"
+                {...props}
+                dropdownRender={(menu) => (
+                  <div>
+                    {menu}
+                    <Divider style={{ margin: "4px 0" }} />
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "nowrap",
+                        padding: 8,
+                      }}
+                    >
+                      <Input
+                        style={{ flex: "auto" }}
+                        value={name}
+                        onChange={onNameChange}
+                      />
+
+                      <a
+                        href="# "
+                        style={{
+                          flex: "none",
+                          padding: "8px",
+                          display: "block",
+                          cursor: "pointer",
+                        }}
+                        onClick={addItem}
+                      >
+                        <PlusOutlined /> Add Module
+                      </a>
+                    </div>
+                  </div>
+                )}
+              >
+                {modules.map((item) => (
+                  <Option key={item}>{item}</Option>
                 ))}
               </Select>
             )}
+          ></Controller>
+        </Form.Item>
+        <Form.Item
+          label={<span style={labelWrapStyle}>Max Leads For This Setting</span>}
+          labelAlign="left"
+        >
+          <Controller
+            as={InputNumber}
+            control={control}
+            name="advancedroundrobin__Max_Leads_For_This_Setting"
           ></Controller>
         </Form.Item>
         <Form.Item label="Percentage" labelAlign="left">
@@ -122,11 +221,18 @@ export const EditSettingForm = (props) => {
             name="Percentage"
           ></Controller>
         </Form.Item>
-        <Form.Item label="Email For Notifications" labelAlign="left">
+        <Form.Item
+          label={<span style={labelWrapStyle}>Email For Notifications</span>}
+          labelAlign="left"
+        >
           <Controller as={Input} control={control} name="email"></Controller>
         </Form.Item>
         <Form.Item
-          label="Disabled Until (useful for holidays)"
+          label={
+            <span style={labelWrapStyle}>
+              Disabled Until (useful for holidays)
+            </span>
+          }
           labelAlign="left"
         >
           <Controller
@@ -177,14 +283,26 @@ export const EditSettingForm = (props) => {
           </>
         ) : (
           <Form.Item
-            label="Do you have salespeople who only work part time?"
+            label={
+              <span style={labelWrapStyle}>
+                Do you have salespeople who only work part time?
+              </span>
+            }
             labelAlign="left"
+            la
           >
             <Button type="primary" onClick={handleSpecifyClick}>
               Specify salesperson availability
             </Button>
           </Form.Item>
         )}
+        <Form.Item
+          label="Dates on Leave"
+          labelAlign="left"
+          style={{ whiteSpace: "normal" }}
+        >
+          <LeaveTable control={control} errors={errors} watch={watch} />
+        </Form.Item>
         <Form.Item style={{ position: "fixed", top: "70px", right: "10px" }}>
           <Button type="primary" htmlType="submit">
             Save

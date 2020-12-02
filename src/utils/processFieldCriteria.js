@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function processFieldCriteria(stringFieldCriteria) {
   /* field criteria is a JSON blob like:
   {
@@ -24,7 +26,7 @@ export function processFieldCriteria(stringFieldCriteria) {
         const fieldName = rawFieldName.trim();
         const criteriaForThisField = rawFieldCriteria[fieldName].split(",");
 
-        criteriaForThisField.forEach(criterion => {
+        criteriaForThisField.forEach((criterion) => {
           const criterionParts = criterion.split(":");
           if (criterionParts.length > 1) {
             const comparisonType = criterionParts[0].trim();
@@ -37,7 +39,6 @@ export function processFieldCriteria(stringFieldCriteria) {
             if (expectedValue.length > 0) {
               result[resultKey].push(expectedValue);
             }
-
           } else {
             const resultKey = `${fieldName}::equals`;
             if (!result[resultKey]) {
@@ -61,7 +62,7 @@ export function processFieldCriteria(stringFieldCriteria) {
           return result.concat({
             fieldName: criteriaParts[0],
             comparisonType: criteriaParts[1].trim(),
-            possibleValues: processedFieldCriteria[fieldCriterionKey]
+            possibleValues: processedFieldCriteria[fieldCriterionKey],
           });
         },
         []
@@ -91,23 +92,42 @@ export function generateFieldCriteriaJSON(fieldCriteriaArray) {
   }
   */
 
-  const fieldCriteriaObject = fieldCriteriaArray.reduce((result, fieldCriteriaRow) => {
-    if (!result[fieldCriteriaRow.fieldName]) {
-      result[fieldCriteriaRow.fieldName] = [];
-    }
+  const fieldCriteriaObject = fieldCriteriaArray.reduce(
+    (result, fieldCriteriaRow) => {
+      if (!result[fieldCriteriaRow.fieldName]) {
+        result[fieldCriteriaRow.fieldName] = [];
+      }
 
-    const newRules = fieldCriteriaRow.possibleValues.map((possibleValue) => {
-      return `${fieldCriteriaRow.comparisonType}:${possibleValue}`
-    });
+      const newRules = fieldCriteriaRow.possibleValues.map((possibleValue) => {
+        return `${fieldCriteriaRow.comparisonType}:${possibleValue}`;
+      });
 
-    result[fieldCriteriaRow.fieldName].push(newRules);
-    return result;
-  }, {});
+      result[fieldCriteriaRow.fieldName].push(newRules);
+      return result;
+    },
+    {}
+  );
 
-  const fieldCriteriaJSON = Object.keys(fieldCriteriaObject).reduce((result, fieldName) => {
-    result[fieldName] = fieldCriteriaObject[fieldName].join(',');
-    return result;
-  }, {});
+  const fieldCriteriaJSON = Object.keys(fieldCriteriaObject).reduce(
+    (result, fieldName) => {
+      result[fieldName] = fieldCriteriaObject[fieldName].join(",");
+      return result;
+    },
+    {}
+  );
 
   return JSON.stringify(fieldCriteriaJSON);
+}
+
+export function processLeaveDates(dates) {
+  try {
+    const rawLeaveDates = JSON.parse(dates);
+    const parsedDates = rawLeaveDates.map((date) => ({
+      dates: [moment(date.startTime), moment(date.endTime)],
+    }));
+    return parsedDates;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 }
