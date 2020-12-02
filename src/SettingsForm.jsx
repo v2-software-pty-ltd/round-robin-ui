@@ -62,6 +62,8 @@ export const EditSettingForm = (props) => {
         data["advancedroundrobin__Timezone"] ||
         Intl.DateTimeFormat().resolvedOptions().timeZone,
       advancedroundrobin__Leave_Dates: data["advancedroundrobin__Leave_Dates"],
+      advancedroundrobin__Max_Leads_For_This_Setting:
+        data["advancedroundrobin__Max_Leads_For_This_Setting"],
     },
   });
 
@@ -200,6 +202,16 @@ export const EditSettingForm = (props) => {
                 ))}
               </Select>
             )}
+          ></Controller>
+        </Form.Item>
+        <Form.Item
+          label={<span style={labelWrapStyle}>Max Leads For This Setting</span>}
+          labelAlign="left"
+        >
+          <Controller
+            as={InputNumber}
+            control={control}
+            name="advancedroundrobin__Max_Leads_For_This_Setting"
           ></Controller>
         </Form.Item>
         <Form.Item label="Percentage" labelAlign="left">

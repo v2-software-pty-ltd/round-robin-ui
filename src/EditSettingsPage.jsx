@@ -134,6 +134,8 @@ export default function EditSettingPage({ setPage, recordID }) {
           data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
         advancedroundrobin__Timezone: data.advancedroundrobin__Timezone,
         advancedroundrobin__Leave_Dates: data.advancedroundrobin__Leave_Dates,
+        advancedroundrobin__Max_Leads_For_This_Setting:
+          data.advancedroundrobin__Max_Leads_For_This_Setting,
       });
 
       setLoading(false);
