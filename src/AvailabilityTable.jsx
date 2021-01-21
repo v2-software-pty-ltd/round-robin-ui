@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import { Table, Checkbox, TimePicker, Button } from "antd";
+import { Table, Checkbox, TimePicker, Button, Alert } from "antd";
 import { Controller, useFieldArray } from "react-hook-form";
 
 const format = "HH:mm";
@@ -15,11 +15,16 @@ export const AvailabilityTable = ({
   getValues,
   errors,
   trigger,
+  watch,
 }) => {
   const { fields } = useFieldArray({
     control,
     name: "advancedroundrobin__Complex_Availability",
   });
+  const complexAvailability = watch("advancedroundrobin__Complex_Availability");
+  const availableCheckedCount = complexAvailability.filter(
+    (field) => field.available
+  ).length;
 
   const copyStartDate = () => {
     fields.forEach((field, index) => {
@@ -233,12 +238,40 @@ export const AvailabilityTable = ({
   ];
 
   return (
-    <Table
-      rowKey="day"
-      bordered
-      dataSource={fields}
-      columns={availabilitycolumns}
-      rowClassName="editable-row"
-    />
+    <>
+      <Table
+        rowKey="day"
+        bordered
+        dataSource={fields}
+        columns={availabilitycolumns}
+        rowClassName="editable-row"
+      />
+      {availableCheckedCount === 0 ? (
+        <>
+          <Alert
+            message="You haven't selected any available days for this setting. No leads will be assigned. Please confirm this is correct."
+            type="warning"
+          />
+          <Controller
+            control={control}
+            defaultValue={false}
+            name="confirmNoLeads"
+            rules={{
+              required: true,
+            }}
+            render={({ onChange, value }) => (
+              <Checkbox
+                checked={value}
+                onChange={(e) => onChange(e.target.checked)}
+                style={{ marginTop: 8 }}
+              >
+                I confirm I am happy for this salesperson to receive no leads
+              </Checkbox>
+            )}
+          />
+          {errors?.confirmNoLeads && <ErrorMessage msg="Please confirm" />}
+        </>
+      ) : null}
+    </>
   );
 };

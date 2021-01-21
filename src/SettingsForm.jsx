@@ -278,6 +278,7 @@ export const EditSettingForm = (props) => {
                 getValues={getValues}
                 errors={errors}
                 trigger={trigger}
+                watch={watch}
               />
             </Form.Item>
           </>
