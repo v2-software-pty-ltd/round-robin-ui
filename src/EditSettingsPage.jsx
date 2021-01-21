@@ -15,6 +15,7 @@ import {
 } from "./utils/processFieldCriteria";
 import { useState, useEffect } from "react";
 import useAsyncError from "./hooks/useAsyncError";
+import moment from "moment";
 
 export default function EditSettingPage({ setPage, recordID }) {
   const [loading, setLoading] = useState(true);
@@ -118,7 +119,6 @@ export default function EditSettingPage({ setPage, recordID }) {
     try {
       setLoading(true);
       const fieldCriteriaJSON = generateFieldCriteriaJSON(data.fieldCriteria);
-
       await updateRoundRobinSetting({
         ...roundRobinSetting,
         advancedroundrobin__Field_Criteria: fieldCriteriaJSON,
@@ -131,7 +131,8 @@ export default function EditSettingPage({ setPage, recordID }) {
           data.Percentage > 100 ? 100 : data.Percentage,
         Email: data.email,
         advancedroundrobin__Disabled_Until:
-          data.Disabled_Until && data.Disabled_Until.format("YYYY-MM-DD"),
+          data.Disabled_Until &&
+          moment(data.Disabled_Until).format("YYYY-MM-DD"),
         advancedroundrobin__Timezone: data.advancedroundrobin__Timezone,
         advancedroundrobin__Leave_Dates: data.advancedroundrobin__Leave_Dates,
         advancedroundrobin__Max_Leads_For_This_Setting:
