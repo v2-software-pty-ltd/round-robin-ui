@@ -66,10 +66,9 @@ export class SettingsList extends React.Component {
     ),
 
     onFilter: (value, record) => {
-      return record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
+      const recordVal = record[dataIndex];
+
+      return recordVal && JSON.stringify(recordVal).toLowerCase().includes(value.toLowerCase());
     },
 
     onFilterDropdownVisibleChange: (visible) => {
