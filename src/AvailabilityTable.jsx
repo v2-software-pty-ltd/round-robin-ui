@@ -9,6 +9,22 @@ const ErrorMessage = ({ msg }) => {
   return <div style={{ color: "red" }}>{msg}</div>;
 };
 
+const getDefaultAvailabilityData = () => {
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  return days.map((day) => {
+    return { day: day, available: false, startTime: "", endTime: "" };
+  });
+};
+
 export const AvailabilityTable = ({
   control,
   setValue,
@@ -21,7 +37,8 @@ export const AvailabilityTable = ({
     control,
     name: "advancedroundrobin__Complex_Availability",
   });
-  const complexAvailability = watch("advancedroundrobin__Complex_Availability");
+  const complexAvailability = watch("advancedroundrobin__Complex_Availability") || getDefaultAvailabilityData();
+  debugger
   const availableCheckedCount = complexAvailability.filter(
     (field) => field.available
   ).length;
