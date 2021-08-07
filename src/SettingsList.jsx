@@ -22,6 +22,7 @@ export class SettingsList extends React.Component {
       activeUsers: activeUsers,
     });
   }
+
   getColumnSearchProps = (dataIndex, columnName) => ({
     filterDropdown: ({
       setSelectedKeys,

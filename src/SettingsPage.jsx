@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 import { SettingsList } from './SettingsList';
 import { addNewSetting, loadRoundRobinSettings } from './utils/callCRMAPI';
 
-export default class extends React.Component {
+export default class SettingsPage extends React.Component {
   state = { roundRobinSettings: [], loading: true, error: null };
 
   componentDidMount() {

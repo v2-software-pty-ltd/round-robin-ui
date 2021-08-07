@@ -12,16 +12,33 @@ export async function loadRoundRobinSettings() {
   const { data: roundRobinSettings } = roundRobinSettingResponse;
 
   return roundRobinSettings.map((roundRobinSetting) => {
-    const ownerName =
+    let ownerName =
+      roundRobinSetting["advancedroundrobin__RR_Team"]?.name ??
       roundRobinSetting["Owner"]?.name ??
       roundRobinSetting["advancedroundrobin.Owner"]?.name ??
       roundRobinSetting["advancedroundrobin.advancedroundrobin.Owner"]?.name;
+
     return {
       ...roundRobinSetting,
       ownerName,
       key: roundRobinSetting.id,
     };
   });
+}
+export async function loadActiveTeams() {
+  await window.ZOHO.embeddedApp.init();
+
+  const teamsResponse = await window.ZOHO.CRM.API.getAllRecords({
+    Entity: "advancedroundrobin__Round_Robin_Teams",
+  });
+
+  if (!teamsResponse.data) {
+    return [];
+  }
+
+  const { data: teams } = teamsResponse;
+
+  return teams;
 }
 
 export async function loadRoundRobinSetting(recordID) {

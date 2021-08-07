@@ -26,10 +26,10 @@ const labelWrapStyle = {
 };
 
 export const EditSettingForm = (props) => {
-  const { data, activeUsers, onSubmit } = props;
+  const { data, activeUsers, activeTeams, onSubmit } = props;
 
   const [modules, setModules] = useState(["Leads", "Contacts", "Deals"]);
-  const [name, setName] = useState("");
+  const [moduleName, setModuleName] = useState("");
 
   const [availabilityEnabled, setAvailabilityEnabled] = useState(false);
 
@@ -44,6 +44,8 @@ export const EditSettingForm = (props) => {
     trigger,
   } = useForm({
     defaultValues: {
+      Team_or_Individual: data['advancedroundrobin__RR_Team']?.id ? "team" : "individual",
+      RR_Team: data['advancedroundrobin__RR_Team']?.id,
       Owner:
         data["Owner"]?.id ??
         data["advancedroundrobin.Owner"]?.id ??
@@ -120,15 +122,17 @@ export const EditSettingForm = (props) => {
   };
 
   const addItem = () => {
-    if (name.length) {
-      setModules((prevState) => [...prevState, name]);
-      setName("");
+    if (moduleName.length) {
+      setModules((prevState) => [...prevState, moduleName]);
+      setModuleName("");
     }
   };
 
-  const onNameChange = (event) => {
-    setName(event.target.value);
+  const onModuleNameChange = (event) => {
+    setModuleName(event.target.value);
   };
+
+  const isTeamSetting = watch('Team_or_Individual') === 'team';
 
   return (
     <div style={{ padding: "40px" }}>
@@ -140,21 +144,61 @@ export const EditSettingForm = (props) => {
         <Form.Item label="Setting Name" labelAlign="left">
           <Controller as={Input} control={control} name="Name"></Controller>
         </Form.Item>
-        <Form.Item label="Owner" labelAlign="left">
+        <Form.Item label="Team or Individual?" labelAlign="left">
           <Controller
-            name="Owner"
             control={control}
+            name="Team_or_Individual"
             render={(props) => (
-              <Select style={{ width: 200 }} placeholder="Owner" {...props}>
-                {activeUsers.map((user) => (
-                  <Select.Option value={user.id} key={user.id}>
-                    {user.full_name}
-                  </Select.Option>
-                ))}
+              <Select
+                style={{ width: 200 }}
+                placeholder="Team or Individual?"
+                showSearch
+                {...props}
+              >
+                <Select.Option key={'team'} value={'team'}>
+                  Team
+                </Select.Option>
+                <Select.Option key={'individual'} value={'individual'}>
+                  Individual
+                </Select.Option>
               </Select>
             )}
           ></Controller>
         </Form.Item>
+        {!isTeamSetting && (
+          <Form.Item label="Owner" labelAlign="left">
+            <Controller
+              name="Owner"
+              control={control}
+              render={(props) => (
+                <Select style={{ width: 200 }} placeholder="Owner" {...props}>
+                  {activeUsers.map((user) => (
+                    <Select.Option value={user.id} key={user.id}>
+                      {user.full_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              )}
+            ></Controller>
+          </Form.Item>
+        )}
+        {isTeamSetting && (
+          <Form.Item label="Team" labelAlign="left">
+            <Controller
+              name="RR_Team"
+              control={control}
+              render={(props) => (
+                <Select style={{ width: 200 }} placeholder="Team" {...props}>
+                  {activeTeams.map((activeTeam) => (
+                    <Select.Option value={activeTeam.id} key={activeTeam.id}>
+                      {activeTeam.Name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              )}
+            ></Controller>
+          </Form.Item>
+        )}
         <Form.Item label="Module" labelAlign="left">
           <Controller
             control={control}
@@ -177,8 +221,8 @@ export const EditSettingForm = (props) => {
                     >
                       <Input
                         style={{ flex: "auto" }}
-                        value={name}
-                        onChange={onNameChange}
+                        value={moduleName}
+                        onChange={onModuleNameChange}
                       />
 
                       <a

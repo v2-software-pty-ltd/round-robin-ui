@@ -5,6 +5,7 @@ import "antd/dist/antd.css";
 import { EditSettingForm } from "./SettingsForm";
 import {
   loadActiveUsers,
+  loadActiveTeams,
   loadRoundRobinSetting,
   updateRoundRobinSetting,
 } from "./utils/callCRMAPI";
@@ -21,6 +22,7 @@ export default function EditSettingPage({ setPage, recordID }) {
   const [loading, setLoading] = useState(true);
   const [roundRobinSetting, setRoundRobinSetting] = useState(null);
   const [activeUsers, setActiveUsers] = useState([]);
+  const [activeTeams, setActiveTeams] = useState([]);
 
   const throwError = useAsyncError();
 
@@ -45,6 +47,7 @@ export default function EditSettingPage({ setPage, recordID }) {
       try {
         const roundRobinSetting = await loadRoundRobinSetting(recordID);
         const activeUsers = await loadActiveUsers();
+        const activeTeams = await loadActiveTeams();
 
         const rawFieldCriteria =
           roundRobinSetting["advancedroundrobin__Field_Criteria"];
@@ -75,6 +78,7 @@ export default function EditSettingPage({ setPage, recordID }) {
           advancedroundrobin__Leave_Dates: leaveDates,
         });
         setActiveUsers(activeUsers);
+        setActiveTeams(activeTeams);
       } catch (e) {
         throwError(e);
       }
@@ -135,6 +139,7 @@ export default function EditSettingPage({ setPage, recordID }) {
           moment(data.Disabled_Until).format("YYYY-MM-DD"),
         advancedroundrobin__Timezone: data.advancedroundrobin__Timezone,
         advancedroundrobin__Leave_Dates: data.advancedroundrobin__Leave_Dates,
+        advancedroundrobin__RR_Team: data.RR_Team,
         advancedroundrobin__Max_Leads_For_This_Setting:
           data.advancedroundrobin__Max_Leads_For_This_Setting,
       });
@@ -155,6 +160,7 @@ export default function EditSettingPage({ setPage, recordID }) {
       return (
         <EditSettingForm
           activeUsers={activeUsers}
+          activeTeams={activeTeams}
           data={roundRobinSetting}
           onSubmit={handleSubmit}
         />
