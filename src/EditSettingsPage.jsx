@@ -120,7 +120,6 @@ export default function EditSettingPage({ setPage, recordID }) {
   };
 
   const handleSubmit = async (data) => {
-    debugger
     try {
       setLoading(true);
       const fieldCriteriaJSON = generateFieldCriteriaJSON(data.fieldCriteria);

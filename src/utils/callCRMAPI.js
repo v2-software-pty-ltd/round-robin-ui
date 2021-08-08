@@ -49,18 +49,8 @@ export async function loadRoundRobinSetting(recordID) {
     RecordID: recordID,
   });
 
-  const roundRobinAvailability = await loadRoundRobinAvailability();
-
   const availabilityEnabled = await checkAvailabilityEnabled();
-  let availabilityRecordsForThisSetting = [];
-
-  if (roundRobinAvailability) {
-    availabilityRecordsForThisSetting = roundRobinAvailability.filter(
-      (item) => {
-        return item.advancedroundrobin__Round_Robin_Setting?.id === recordID;
-      }
-    );
-  }
+  const availabilityRecordsForThisSetting = await loadRoundRobinAvailabilityForRoundRobinSetting(recordID);
 
   return {
     ...roundRobinSetting[0],
@@ -117,7 +107,7 @@ export async function updateRoundRobinAvailability(availabilityData) {
     const [availability] = await loadRoundRobinAvailabilityRecord(availabilityData.round_robin_availability_id);
 
     if (availability) {
-      await window.ZOHO.CRM.API.updateRecord({
+      const result = await window.ZOHO.CRM.API.updateRecord({
         Entity: "advancedroundrobin__Round_Robin_Availability",
         APIData: {
           ...availability,
@@ -131,6 +121,8 @@ export async function updateRoundRobinAvailability(availabilityData) {
         },
         Trigger: ["workflow"],
       });
+
+      return result;
     }
   } else {
     const data = {
@@ -151,7 +143,8 @@ export async function updateRoundRobinAvailability(availabilityData) {
         id: availabilityData.teamMemberId,
       }
     }
-    await addNewRoundRobinAvailability(data);
+    const result = await addNewRoundRobinAvailability(data);
+    return result;
   }
 }
 
@@ -210,18 +203,28 @@ export async function loadRoundRobinAvailabilityRecord (availabilityId) {
   return data;
 }
 
-export async function loadRoundRobinAvailabilityForTeamMember(teamMemberId) {
+export async function searchForAvailabilitySetting(criteria) {
   await window.ZOHO.embeddedApp.init();
 
   const response = await window.ZOHO.CRM.API.searchRecord({
     Entity: 'advancedroundrobin__Round_Robin_Availability',
     Type: 'criteria',
-    Query: `(advancedroundrobin__Related_Team_Member:equals:${teamMemberId})`,
+    Query: criteria,
     page: 1,
     per_page: 200,
   });
 
   const { data } = response;
+  return data;
+}
+
+export async function loadRoundRobinAvailabilityForRoundRobinSetting(settingId) {
+  const data = await searchForAvailabilitySetting(`(advancedroundrobin__Round_Robin_Setting:equals:${settingId})`);
+  return data;
+}
+
+export async function loadRoundRobinAvailabilityForTeamMember(teamMemberId) {
+  const data = await searchForAvailabilitySetting(`(advancedroundrobin__Related_Team_Member:equals:${teamMemberId})`);
   return data;
 }
 
@@ -286,7 +289,7 @@ export async function getWidgetData() {
         widgetType: 'RelatedList',
         selectedModule: currentSelectedModule,
         selectedRecordID: selectedRecordID,
-        selectedRecordData: data
+        selectedRecordData: data?.[0]
       });
     });
     window.ZOHO.embeddedApp.init();

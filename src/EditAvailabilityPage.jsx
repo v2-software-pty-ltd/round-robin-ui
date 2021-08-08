@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
-import { Controller, useForm } from "react-hook-form";
-import { Col, Form, Layout, Row, Select, Spin, Typography } from 'antd';
+import { Col, Layout, Row, Spin, Typography } from 'antd';
+import moment from "moment";
 import 'antd/dist/antd.css';
-import { tz } from "moment-timezone";
 
 import useAsyncError from "./hooks/useAsyncError";
-import { AvailabilityTable } from "./AvailabilityTable";
 import { loadRoundRobinAvailabilityForTeamMember, updateRoundRobinAvailability } from './utils/callCRMAPI';
+import { EditAvailabilityForm } from './EditAvailabilityForm';
 
 const Header = () => {
   return (
@@ -58,9 +57,28 @@ const EditAvailabilityPage = ({ teamMemberId, teamMemberRecord }) => {
         if (!availabilityData) {
           setAvailabilityData({});
         } else {
-          setAvailabilityData({
+          const complexAvailability = availabilityData[0]?.advancedroundrobin__Complex_Availability;
+          const processedAvailabilityData = {
             ...availabilityData[0]
-          });
+          }
+
+          try {
+            const parsedLeaveDates = JSON.parse(availabilityData[0]?.advancedroundrobin__Leave_Dates);
+            processedAvailabilityData.advancedroundrobin__Leave_Dates = parsedLeaveDates.map((leaveDate) => {
+              return {
+                dates: [moment(leaveDate.dates[0]), moment(leaveDate.dates[1])],
+              }
+            });
+          } catch (e) {
+          }
+
+          try {
+            const parsedAvailability = JSON.parse(complexAvailability);
+            processedAvailabilityData.advancedroundrobin__Complex_Availability = parsedAvailability;
+          } catch (e) {
+          }
+
+          setAvailabilityData(processedAvailabilityData);
         }
 
         setIsLoading(false);
@@ -71,29 +89,6 @@ const EditAvailabilityPage = ({ teamMemberId, teamMemberRecord }) => {
 
     fetchAvailability();
   }, [teamMemberId, teamMemberRecord.Owner]);
-
-  const defaultValues = {
-    advancedroundrobin__Complex_Availability:
-      availabilityData["advancedroundrobin__Complex_Availability"],
-    advancedroundrobin__Timezone:
-      availabilityData["advancedroundrobin__Timezone"] ||
-      Intl.DateTimeFormat().resolvedOptions().timeZone,
-    advancedroundrobin__Leave_Dates: availabilityData["advancedroundrobin__Leave_Dates"],
-    advancedroundrobin__Max_Leads_For_This_Setting:
-      availabilityData["advancedroundrobin__Max_Leads_For_This_Setting"],
-  };
-
-  const {
-    control,
-    handleSubmit,
-    errors,
-    watch,
-    setValue,
-    getValues,
-    trigger,
-  } = useForm({
-    defaultValues,
-  });
 
   const handleSave = async (data) => {
     const newData = JSON.parse(JSON.stringify(data));
@@ -109,7 +104,7 @@ const EditAvailabilityPage = ({ teamMemberId, teamMemberRecord }) => {
 
     try {
       setIsLoading(true);
-      await updateRoundRobinAvailability({
+      const result = await updateRoundRobinAvailability({
         ...availabilityData,
         Name: `Availability for team member ${teamMemberRecord.Owner.name}`,
         Owner: teamMemberRecord.Owner,
@@ -122,63 +117,32 @@ const EditAvailabilityPage = ({ teamMemberId, teamMemberRecord }) => {
       });
 
       setIsLoading(false);
+
+      window.location.reload();
     } catch (e) {
       throwError(e);
     }
   };
 
   return (
-    <Layout>
-      <Layout.Header>
-        <Header />
-      </Layout.Header>
-      <Layout.Content>
-        {error && (
-          <div className="alert alert-danger">
-            <strong>Error:</strong> {error.message}
-          </div>
-        )}
-        {isLoading && <Spin tip="Loading..." />}
-        {!isLoading && (
-          <Form
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 16 }}
-            onFinish={handleSubmit(handleSave)}
-          >
-            <Form.Item label="Time Zone" labelAlign="left">
-              <Controller
-                control={control}
-                name="advancedroundrobin__Timezone"
-                render={(props) => (
-                  <Select
-                    style={{ width: 200 }}
-                    placeholder="Timezone"
-                    showSearch
-                    {...props}
-                  >
-                    {tz.names().map((field) => (
-                      <Select.Option key={field} value={field}>
-                        {field}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                )}
-              ></Controller>
-            </Form.Item>
-            <Form.Item label="Availability" labelAlign="left">
-              <AvailabilityTable
-                control={control}
-                setValue={setValue}
-                getValues={getValues}
-                errors={errors}
-                trigger={trigger}
-                watch={watch}
-              />
-            </Form.Item>
-          </Form>
-        )}
-      </Layout.Content>
-    </Layout>
+    <div>
+      <Layout>
+        <Layout.Header>
+          <Header />
+        </Layout.Header>
+        <Layout.Content style={{ padding: '40px'}}>
+          {error && (
+            <div className="alert alert-danger">
+              <strong>Error:</strong> {error.message}
+            </div>
+          )}
+          {isLoading && <Spin tip="Loading..." />}
+          {!isLoading && (
+            <EditAvailabilityForm handleSave={handleSave} availabilityData={availabilityData} />
+          )}
+        </Layout.Content>
+      </Layout>
+    </div>
   );
 }
 
