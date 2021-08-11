@@ -108,7 +108,7 @@ const EditAvailabilityPage = ({ teamMemberId, teamMemberRecord }) => {
         ...availabilityData,
         Name: `Availability for team member ${teamMemberRecord.Owner.name}`,
         Owner: teamMemberRecord.Owner,
-        round_robin_availability_id: availabilityData.id,
+        round_robin_availability_id: availabilityData?.id,
         teamMemberId,
         advancedroundrobin__Complex_Availability:
           data.advancedroundrobin__Complex_Availability,

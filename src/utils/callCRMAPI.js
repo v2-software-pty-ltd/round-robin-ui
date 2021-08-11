@@ -55,15 +55,15 @@ export async function loadRoundRobinSetting(recordID) {
   return {
     ...roundRobinSetting[0],
     round_robin_availability_id:
-      availabilityRecordsForThisSetting[0]?.id || undefined,
+      availabilityRecordsForThisSetting?.[0]?.id || undefined,
     advancedroundrobin__Timezone:
-      availabilityRecordsForThisSetting[0]?.advancedroundrobin__Timezone || "",
+      availabilityRecordsForThisSetting?.[0]?.advancedroundrobin__Timezone || "",
     advancedroundrobin__Complex_Availability:
-      availabilityRecordsForThisSetting[0]
+      availabilityRecordsForThisSetting?.[0]
         ?.advancedroundrobin__Complex_Availability || [],
     availabilityEnabled: availabilityEnabled,
     advancedroundrobin__Leave_Dates:
-      availabilityRecordsForThisSetting[0]?.advancedroundrobin__Leave_Dates ||
+      availabilityRecordsForThisSetting?.[0]?.advancedroundrobin__Leave_Dates ||
       [],
   };
 }
